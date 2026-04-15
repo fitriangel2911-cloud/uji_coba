@@ -126,6 +126,65 @@ h1, h2, h3 {
     background-color: var(--primary-light);
 }
 
+/* Form & Grid Layouts */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    padding: 0.85rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.75rem;
+    color: var(--text-main);
+    font-family: inherit;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+}
+
+/* Tab Styling */
+.tab-btn {
+    flex: 1;
+    padding: 1.25rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.tab-active {
+    color: var(--primary-light);
+    border-bottom-color: var(--primary-light);
+    background: rgba(5, 150, 105, 0.05);
+}
+
 /* Micro-animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
