@@ -28,9 +28,8 @@
             <nav>
                 <ul>
                     <li><a href="/" class="{{ 'active' if request.path == '/' else '' }}">Beranda</a></li>
-                    <li><a href="/kyc" class="{{ 'active' if request.path == '/kyc' else '' }}">Keanggotaan (KYC)</a></li>
-                    <li><a href="#">Siklus Pendapatan</a></li>
-                    <li><a href="#">Siklus Pengeluaran</a></li>
+                    <li><a href="/kyc" class="{{ 'active' if '/kyc' in request.path else '' }}">Keanggotaan (KYC)</a></li>
+                    <li><a href="/finance" class="{{ 'active' if '/finance' in request.path else '' }}">Pusat Keuangan</a></li>
                     <li><a href="#">Simulasi Perbankan</a></li>
                     <li><a href="#">Laporan Keuangan</a></li>
                 </ul>
@@ -59,6 +58,9 @@
                 {% block content %}{% endblock %}
             </div>
         </main>
+        
+        <!-- Toast Notification Container -->
+        <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 50;"></div>
     </div>
 
     <script>

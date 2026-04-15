@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Siklus Penerimaan (Revenue)</h1>
+    <p style="color: var(--text-muted);">Pencatatan pendapatan, setoran anggota, dan angsuran akad (Murabahah).</p>
+</div>
+
+<div class="glass-card" style="max-width: 600px; margin-top: 2rem;">
+    <form hx-post="/api/finance/revenue" hx-target="#toast-container" hx-swap="innerHTML">
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Jenis Penerimaan</label>
+            <select name="type" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main);">
+                <option value="setoran_pokok">Setoran Pokok / Wajib</option>
+                <option value="angsuran_murabahah">Angsuran Murabahah</option>
+                <option value="penerimaan_lain">Penerimaan Lain-lain</option>
+            </select>
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Nominal (Rp)</label>
+            <input type="number" name="amount" required style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main);" placeholder="Misal: 500000">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Keterangan Lengkap</label>
+            <textarea name="description" rows="3" required style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main);" placeholder="Keterangan transaksi..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%;">
+            Proses Penerimaan
+        </button>
+    </form>
+</div>
+{% endblock %}

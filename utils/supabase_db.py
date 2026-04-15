@@ -17,6 +17,9 @@ def get_supabase_client() -> Client:
     
     return create_client(url, key)
 
+# Instance database global untuk kemudahan import di modul lain
+db = get_supabase_client()
+
 def get_members(query=None):
     """
     Mengambil data anggota dari tabel members.
