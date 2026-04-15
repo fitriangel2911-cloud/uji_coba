@@ -9,17 +9,17 @@
 <div class="stats-grid">
     <div class="glass-card">
         <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Anggota</div>
-        <div style="font-size: 2rem; font-weight: 700; color: var(--primary-light);">1,254</div>
-        <div style="font-size: 0.8rem; color: #10b981;">↑ 12% dari bulan lalu</div>
+        <div style="font-size: 2rem; font-weight: 700; color: var(--primary-light);">{{ stats.total_members }}</div>
+        <div style="font-size: 0.8rem; color: #10b981;">↑ Aktif dalam Sistem</div>
     </div>
     <div class="glass-card">
         <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Saldo Kas Syariah</div>
-        <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">Rp 450.2M</div>
+        <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">Rp {{ stats.cash_balance }}</div>
         <div style="font-size: 0.8rem; color: var(--text-muted);">Nilai Aset Terkelola</div>
     </div>
     <div class="glass-card">
         <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Kepatuhan Fatwa</div>
-        <div style="font-size: 2rem; font-weight: 700;">100%</div>
+        <div style="font-size: 2rem; font-weight: 700;">{{ stats.compliance }}</div>
         <div style="font-size: 0.8rem; color: #10b981;">Terverifikasi DSN-MUI</div>
     </div>
 </div>

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Manajemen Keanggotaan (KYC)</h1>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Validasi identitas anggota untuk memastikan kepatuhan prinsip Syariah.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+    <!-- Form Pendaftaran -->
+    <div class="glass-card">
+        <h3>Daftarkan Anggota Baru</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Gunakan form ini untuk input data KYC anggota baru.</p>
+        
+        <div id="kyc-alert"></div>
+        
+        <form hx-post="/api/members" 
+              hx-target="#member-table-body" 
+              hx-indicator="#loading-spinner"
+              hx-encoding="multipart/form-data"
+              hx-on::after-request="if(event.detail.successful) this.reset()"
+              style="display: flex; flex-direction: column; gap: 1rem;">
+            
+            <div id="loading-spinner" class="htmx-indicator" style="text-align: center; color: var(--primary-light); font-size: 0.8rem; margin-bottom: 0.5rem;">
+                Memproses pendaftaran...
+            </div>
+            
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem;">Nama Lengkap</label>
+                <input type="text" name="full_name" required placeholder="Sesuai KTP" 
+                       style="width: 100%; padding: 0.75rem; background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem;">NIK (No. Identitas)</label>
+                <input type="text" name="identity_number" required placeholder="16 Digit NIK" 
+                       style="width: 100%; padding: 0.75rem; background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem;">Alamat Lengkap</label>
+                <textarea name="address" required placeholder="Alamat Domisili" rows="2"
+                          style="width: 100%; padding: 0.75rem; background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white; resize: none;"></textarea>
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem;">No. WhatsApp</label>
+                <input type="text" name="phone_number" required placeholder="08..." 
+                       style="width: 100%; padding: 0.75rem; background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+            </div>
+
+            <div x-data="{ fileName: '' }">
+                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem;">Upload Foto KTP</label>
+                <div style="position: relative; border: 2px dashed var(--glass-border); border-radius: 0.5rem; padding: 1rem; text-align: center; cursor: pointer;">
+                    <input type="file" name="ktp_photo" accept="image/*" 
+                           @change="fileName = $event.target.files.length ? $event.target.files[0].name : ''"
+                           style="position: absolute; inset: 0; opacity: 0; cursor: pointer;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">
+                        <span x-text="fileName ? fileName : 'Klik atau seret foto KTP ke sini'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem;">Pilihan Akad Utama</label>
+                <select name="contract_type" required 
+                        style="width: 100%; padding: 0.75rem; background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+                    <option value="musharakah">Akad Musharakah (Penyertaan Modal)</option>
+                    <option value="wadiah">Akad Wadiah (Titipan Dana/Simpanan)</option>
+                    <option value="mudharabah">Akad Mudharabah (Bagi Hasil Keuntungan)</option>
+                </select>
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">*Pilih akad yang mendasari keanggotaan Anda.</p>
+            </div>
+
+            <div style="background: rgba(6, 95, 70, 0.1); border: 1px solid var(--primary-light); border-radius: 0.5rem; padding: 1rem;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--primary-light); margin-bottom: 0.5rem;">Deklarasi Ijab Qabul Digital</label>
+                <div style="font-size: 0.8rem; line-height: 1.4; color: var(--text-main); font-style: italic;">
+                    "Dengan mengucap Bismillah, saya menyatakan diri bergabung sebagai anggota Koperasi Syariah IQ-RA dengan Akad yang telah dipilih. Saya bersedia menaati seluruh Syarat dan Ketentuan demi kemaslahatan bersama berdasarkan prinsip Syariah."
+                </div>
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; cursor: pointer; font-size: 0.85rem;">
+                    <input type="checkbox" name="is_contract_accepted" required>
+                    <span>Saya setuju dan ber-Akad secara sadar</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 1rem;">
+                Daftarkan Anggota & Ber-Akad
+            </button>
+        </form>
+    </div>
+
+    <!-- List Anggota -->
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Daftar Anggota</h3>
+            <div style="display: flex; gap: 1rem;">
+                <input type="text" name="q" 
+                       hx-get="/api/members" 
+                       hx-trigger="keyup changed delay:500ms" 
+                       hx-target="#member-table-body" 
+                       placeholder="Cari Nama atau NIK..."
+                       style="padding: 0.5rem 1rem; background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white; width: 250px;">
+                <button class="btn-primary" hx-get="/api/members" hx-target="#member-table-body" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="color: var(--text-muted); font-size: 0.85rem; border-bottom: 1px solid var(--glass-border);">
+                        <th style="padding: 1rem;">Anggota</th>
+                        <th style="padding: 1rem;">Kontak</th>
+                        <th style="padding: 1rem;">Dokumen</th>
+                        <th style="padding: 1rem;">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="member-table-body" hx-get="/api/members" hx-trigger="load">
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                            Memuat data anggota...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

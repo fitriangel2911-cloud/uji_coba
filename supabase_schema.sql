@@ -14,10 +14,15 @@ CREATE TABLE profiles (
 CREATE TABLE members (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id),
+  full_name TEXT, -- Nama Lengkap Anggota
+  identity_number TEXT UNIQUE, -- NIK
   address TEXT,
   phone_number TEXT,
   status TEXT DEFAULT 'pending', -- 'pending', 'active', 'rejected'
-  submission_date TIMESTAMP WITH TIME ZONE DEFAULT now()
+  submission_date TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  ktp_url TEXT, -- Link to uploaded KTP image in Supabase Storage
+  contract_type TEXT, -- 'musharakah', 'wadiah', etc
+  is_contract_accepted BOOLEAN DEFAULT FALSE
 );
 
 -- 3. Tabel Journal Entries (Akuntansi Syariah Dasar)

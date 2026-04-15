@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
     <!-- Alpine JS -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -27,8 +27,8 @@
             
             <nav>
                 <ul>
-                    <li><a href="/" class="active">Beranda</a></li>
-                    <li><a href="#">Keanggotaan (KYC)</a></li>
+                    <li><a href="/" class="{{ 'active' if request.path == '/' else '' }}">Beranda</a></li>
+                    <li><a href="/kyc" class="{{ 'active' if request.path == '/kyc' else '' }}">Keanggotaan (KYC)</a></li>
                     <li><a href="#">Siklus Pendapatan</a></li>
                     <li><a href="#">Siklus Pengeluaran</a></li>
                     <li><a href="#">Simulasi Perbankan</a></li>
