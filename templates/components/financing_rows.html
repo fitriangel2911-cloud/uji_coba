@@ -1,0 +1,24 @@
+{% for app in apps %}
+<tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+    <td style="padding: 1.25rem 1rem;">
+        <div style="font-weight: 700; color: #fff;">{{ app.member_name }}</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Diajukan: {{ app.created_at[:10] }}</div>
+    </td>
+    <td style="padding: 1.25rem 1rem;">
+        <div style="color: var(--accent-gold); font-weight: 800; font-size: 1.1rem;">Rp {{ "{:,.0f}".format(app.amount) }}</div>
+    </td>
+    <td style="padding: 1.25rem 1rem;">
+        <span style="font-size: 0.85rem; padding: 0.2rem 0.5rem; background: rgba(255,255,255,0.1); border-radius: 4px;">{{ app.contract_type }}</span>
+    </td>
+    <td style="padding: 1.25rem 1rem; font-size: 0.85rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ app.purpose }}">
+        {{ app.purpose }}
+    </td>
+    <td style="padding: 1.25rem 1rem;">
+        <form hx-post="/api/finance/approve" hx-target="#financing-list" style="display: flex; gap: 0.75rem; justify-content: center;">
+            <input type="hidden" name="app_id" value="{{ app.id }}">
+            <button name="status" value="approved" class="btn-gold" style="padding: 0.5rem 1rem; font-size: 0.8rem; flex: 1;">Setujui</button>
+            <button name="status" value="rejected" class="btn-outline-gold" style="padding: 0.5rem 1rem; font-size: 0.8rem; border-color: #ef4444; color: #fca5a5; flex: 1;">Tolak</button>
+        </form>
+    </td>
+</tr>
+{% endfor %}

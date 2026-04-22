@@ -3,33 +3,54 @@ import datetime
 
 class AuthModel:
     @staticmethod
-    def sign_up(email, password, full_name, role="member"):
-        # Sign up user in Supabase Auth
-        res = sp.db.auth.sign_up({
-            "email": email, 
-            "password": password,
-            "options": {"data": {"full_name": full_name, "role": role}}
-        })
-        if res.user:
-            # Upsert into profiles table using admin client to bypass RLS
-            AuthModel.upsert_profile(res.user.id, full_name, role)
-        return res
+    def sign_up(email, password, full_name, phone_number, role="member", akad=None):
+        try:
+            # Sign up user in Supabase Auth
+            # Note: Profile is now handled by Supabase Database Trigger (handle_new_user)
+            res = sp.db.auth.sign_up({
+                "email": email, 
+                "password": password,
+                "options": {
+                    "data": {
+                        "full_name": full_name, 
+                        "role": role, 
+                        "akad": akad,
+                        "phone_number": phone_number
+                    }
+                }
+            })
+            print(f"DEBUG: Supabase Registration Success for {email}")
+            return res
+        except Exception as e:
+            print(f"DEBUG: SUPABASE REGISTRATION ERROR: {str(e)}")
+            raise e
 
     @staticmethod
     def sign_in(email, password):
         return sp.db.auth.sign_in_with_password({"email": email, "password": password})
 
     @staticmethod
-    def upsert_profile(user_id, full_name, role):
-        return sp.db_admin.table("profiles").upsert({
+    def upsert_profile(user_id, full_name, email, phone_number, password, role, akad=None):
+        table_name = "demo_profiles" if role == "demo" else "profiles"
+        return sp.db_admin.table(table_name).upsert({
             "id": user_id,
             "full_name": full_name,
-            "role": role
+            "email": email,
+            "phone_number": phone_number,
+            "password": password,
+            "role": role,
+            "akad": akad # New akad field
         }).execute()
 
     @staticmethod
     def get_profile(user_id):
-        res = sp.db.table("profiles").select("*").eq("id", user_id).execute()
+        # Check profiles first (members, admin, staff)
+        res = sp.db_admin.table("profiles").select("*").eq("id", user_id).execute()
+        if res.data:
+            return res.data[0]
+        
+        # Then check demo_profiles
+        res = sp.db_admin.table("demo_profiles").select("*").eq("id", user_id).execute()
         return res.data[0] if res.data else None
 
     @staticmethod

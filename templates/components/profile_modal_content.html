@@ -1,0 +1,79 @@
+<div style="font-size: 1rem; line-height: 1.5;">
+    <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+        <!-- Photo Update Section -->
+        <div style="position: relative; cursor: pointer;" onclick="document.getElementById('photo-upload').click()">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-gold), #b45309); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: #000; box-shadow: 0 6px 20px rgba(217, 119, 6, 0.3);">
+                {{ user_name[0].upper() }}
+            </div>
+            <div style="position: absolute; bottom: -4px; right: -4px; background: var(--accent); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary-dark);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <input type="file" id="photo-upload" style="display: none;">
+        </div>
+        <div>
+            <h2 style="font-size: 1.5rem; margin: 0; color: #fff; font-weight: 700;">{{ user_name }}</h2>
+            <p style="color: var(--accent-gold); font-weight: 700; margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                {{ member.status.upper() if member else 'BELUM TERDAFTAR' }}
+            </p>
+        </div>
+    </div>
+
+    <form hx-post="/api/profile/update" hx-target="#profile-update-res" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div id="profile-update-res" style="grid-column: span 2;"></div>
+
+        <!-- Data Dasar -->
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Username / User ID</label>
+            <input type="text" class="form-control" value="{{ user_name }}" readonly style="font-size: 1rem; background: rgba(0,0,0,0.2); padding: 0.6rem;">
+        </div>
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Nama Lengkap</label>
+            <input type="text" name="full_name" class="form-control" value="{{ member.full_name if member else '' }}" placeholder="Belum diisi" style="font-size: 1rem; padding: 0.6rem;">
+        </div>
+
+        <!-- Data Identitas -->
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Nomor Induk Kependudukan (NIK)</label>
+            <input type="text" name="identity_number" class="form-control" value="{{ member.identity_number if member else '' }}" placeholder="Belum diisi" style="font-size: 1rem; padding: 0.6rem;">
+        </div>
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Nomor Kartu Keluarga (KK)</label>
+            <input type="text" name="family_card_number" class="form-control" value="{{ member.family_card_number if member else '' }}" placeholder="Belum diisi" style="font-size: 1rem; padding: 0.6rem;">
+        </div>
+
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Agama</label>
+            <select name="religion" class="form-control" style="font-size: 1rem; padding: 0.6rem;">
+                <option value="Islam" {{ 'selected' if member and member.religion == 'Islam' }}>Islam</option>
+                <option value="Kristen" {{ 'selected' if member and member.religion == 'Kristen' }}>Kristen</option>
+                <option value="Katolik" {{ 'selected' if member and member.religion == 'Katolik' }}>Katolik</option>
+                <option value="Hindu" {{ 'selected' if member and member.religion == 'Hindu' }}>Hindu</option>
+                <option value="Budha" {{ 'selected' if member and member.religion == 'Budha' }}>Budha</option>
+                <option value="Lainnya" {{ 'selected' if member and member.religion == 'Lainnya' }}>Lainnya</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Nama Ibu Kandung</label>
+            <input type="text" name="mother_name" class="form-control" value="{{ member.mother_name if member else '' }}" placeholder="Belum diisi" style="font-size: 1rem; padding: 0.6rem;">
+        </div>
+
+        <div class="form-group" style="grid-column: span 2;">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Alamat Lengkap (KTP)</label>
+            <textarea name="address" class="form-control" rows="2" style="font-size: 1rem; padding: 0.6rem;">{{ member.address if member else '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Penghasilan (Rp)</label>
+            <input type="number" name="income" class="form-control" value="{{ member.income if member else '' }}" placeholder="Belum diisi" style="font-size: 1rem; padding: 0.6rem;">
+        </div>
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Nomor NPWP</label>
+            <input type="text" name="npwp" class="form-control" value="{{ member.npwp if member else '' }}" placeholder="Belum diisi" style="font-size: 1rem; padding: 0.6rem;">
+        </div>
+
+        <div style="grid-column: span 2; margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+            <button type="button" onclick="profileModalOpen = false" class="btn-outline-gold" style="padding: 0.6rem 1.5rem; font-size: 0.9rem;">Batal</button>
+            <button type="submit" class="btn-gold" style="padding: 0.6rem 2.5rem; font-size: 0.9rem;">Simpan</button>
+        </div>
+    </form>
+</div>

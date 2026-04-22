@@ -24,7 +24,10 @@ def login():
             session['user_name'] = profile.get('full_name', email.split('@')[0]) if profile else email.split('@')[0]
             
             return '<script>window.location.href = "/dashboard";</script>'
-        except Exception:
+        except Exception as e:
+            error_msg = str(e)
+            if "Email not confirmed" in error_msg:
+                return f'<div class="alert-error">Akun Belum Aktif: Silakan konfirmasi email <strong>{email}</strong> terlebih dahulu.</div>'
             return '<div class="alert-error">Login Gagal: Periksa email & password.</div>'
             
     return render_template('auth/login.html')
@@ -58,32 +61,65 @@ def login_demo():
             
             return '<script>window.location.href = "/dashboard";</script>'
         except Exception as e:
-            return f'<div class="alert-error">Login Demo Gagal: {str(e)}</div>'
+            error_msg = str(e)
+            if "Invalid login credentials" in error_msg:
+                error_msg = "Email atau password demo salah."
+            return f'<div class="alert-error">Login Demo Gagal: {error_msg}</div>'
             
     return render_template('auth/login_demo.html')
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    # Detect default role from query param (e.g. /register?role=demo)
+    default_role = request.args.get('role', 'member')
+    
     if request.method == 'POST':
+        print("\n" + "="*50)
+        print("🚀 PENDAFTARAN DITERIMA!")
         email = request.form.get('email')
+        role = request.form.get('role', 'member')
+        print(f"📧 Email: {email}")
+        print(f"👤 Role: {role}")
+        print("="*50 + "\n")
+        
         password = request.form.get('password')
         full_name = request.form.get('full_name')
-        role = request.form.get('role', 'member') # Can be 'member' or 'demo'
+        phone_number = request.form.get('phone_number')
+        akad = request.form.get('akad')
         
         try:
-            res = AuthModel.sign_up(email, password, full_name, role)
+            res = AuthModel.sign_up(email, password, full_name, phone_number, role, akad)
             if res.user:
-                if res.user.confirmed_at is None:
-                    return f'<div class="alert-success">Registrasi Berhasil! Silakan konfirmasi email <strong>{email}</strong>.</div>'
+                print(f"✅ Supabase Auth Berhasil: {res.user.id}")
+                
+                # Jika role adalah demo, login otomatis
+                if role == 'demo':
+                    session['user_id'] = res.user.id
+                    session['role'] = 'demo'
+                    session['user_name'] = full_name
+                    return '<script>window.location.href = "/dashboard";</script>'
+
+                # Jika email belum dikonfirmasi (untuk akun real)
+                if res.user.identities and len(res.user.identities) > 0:
+                    return f'<script>window.location.href = "{url_for("auth.verification_pending", email=email)}";</script>'
                 else:
                     session['user_id'] = res.user.id
                     session['role'] = role
+                    session['user_name'] = full_name
                     return '<script>window.location.href = "/dashboard";</script>'
-            return '<div class="alert-error">Registrasi Gagal.</div>'
-        except Exception as e:
-            return f'<div class="alert-error">Error: {str(e)}</div>'
             
-    return render_template('auth/register.html')
+            return '<div class="alert-error">❌ Supabase Auth Gagal: User tidak terbentuk. Silakan coba email lain.</div>'
+            
+        except Exception as e:
+            print(f"🔥 ERROR FATAL: {str(e)}")
+            return f'<div class="alert-error">🔥 Koneksi Gagal: {str(e)}</div>'
+            
+    return render_template('auth/register.html', default_role=default_role)
+
+@auth_bp.route('/verification-pending')
+def verification_pending():
+    email = request.args.get('email', 'Email Anda')
+    return render_template('auth/verification_pending.html', email=email)
 
 @auth_bp.route('/logout')
 def logout():

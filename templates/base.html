@@ -11,15 +11,27 @@
     <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body x-data="{ sidebarOpen: true }" class="bg-base text-main">
-    <aside class="sidebar" x-show="sidebarOpen" style="background: var(--primary-dark); border-right: 1px solid var(--glass-border);">
-        <div class="logo">
-            <div style="background: var(--accent-gold); padding: 4px; border-radius: 6px; color: var(--bg-base); display: flex; align-items: center;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+<body x-data="{ sidebarOpen: true, profileOpen: false, profileModalOpen: false }" class="bg-base text-main">
+    <!-- Sidebar -->
+    <aside class="sidebar" 
+           x-show="sidebarOpen" 
+           x-transition:enter="transition ease-out duration-300"
+           x-transition:enter-start="-translate-x-full"
+           x-transition:enter-end="translate-x-0"
+           x-transition:leave="transition ease-in duration-300"
+           x-transition:leave-start="translate-x-0"
+           x-transition:leave-end="-translate-x-full"
+           style="background: var(--primary-dark); border-right: 1px solid var(--glass-border); width: 280px; position: fixed; height: 100vh; z-index: 50;">
+        <div class="logo" style="padding: 2.5rem 2rem;">
+            <div style="background: var(--accent-gold); padding: 6px; border-radius: 8px; color: var(--bg-base); display: flex; align-items: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             </div>
-            <span style="font-weight: 800; font-size: 1.1rem; letter-spacing: 0.05em;">IQ-RA <span style="color: var(--accent-gold);">SYSTEM</span></span>
+            <span style="font-weight: 800; font-size: 1.4rem; letter-spacing: 0.05em; display: flex; flex-direction: column; line-height: 1.1;">
+                <span>IQ-RA</span>
+                <span style="color: var(--accent-gold); font-size: 0.9rem;">DIGITAL SYSTEM</span>
+            </span>
         </div>
-        <nav style="flex: 1;">
+        <nav style="flex: 1; padding: 0 1rem;">
             <ul>
                 <li style="margin-bottom: 0.5rem;">
                     <a href="/dashboard" class="{{ 'active' if request.path == '/dashboard' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/dashboard' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/dashboard' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/dashboard' else 'none' }};">
@@ -28,45 +40,65 @@
                     </a>
                 </li>
                 <li style="margin-bottom: 0.5rem;">
+                    <a href="/catalog" class="{{ 'active' if request.path == '/catalog' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/catalog' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/catalog' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/catalog' else 'none' }};">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                        <span>Produk</span>
+                    </a>
+                </li>
+                <li style="margin-bottom: 0.5rem;">
                     <a href="/kyc" class="{{ 'active' if request.path == '/kyc' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/kyc' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/kyc' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/kyc' else 'none' }};">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         <span>Keanggotaan</span>
                     </a>
                 </li>
-                {% if session.get('role') in ('admin', 'staff') %}
                 <li style="margin-bottom: 0.5rem;">
-                    <a href="/finance" class="{{ 'active' if request.path == '/finance' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/finance' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/finance' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/finance' else 'none' }};">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        <span>Keuangan</span>
+                    <a href="/payments" class="{{ 'active' if request.path == '/payments' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/payments' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/payments' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/payments' else 'none' }};">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                        <span>Riwayat Pembayaran</span>
                     </a>
                 </li>
-                {% endif %}
             </ul>
         </nav>
-        <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
-            <a href="/logout" style="color: #fca5a5; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 0.6rem; opacity: 0.8; transition: var(--transition);">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                <span>Keluar Sistem</span>
-            </a>
-        </div>
     </aside>
 
-    <main class="main-content">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; padding: 1.25rem 2rem; background: var(--glass); backdrop-filter: var(--blur); border: 1px solid var(--glass-border); border-radius: 16px;">
+    <!-- Main Content -->
+    <main :style="sidebarOpen ? 'margin-left: 280px; width: calc(100% - 280px)' : 'margin-left: 0; width: 100%'" 
+          style="transition: all 0.3s ease-in-out; padding: 2rem; min-height: 100vh; position: relative;">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; padding: 1rem 2rem; background: var(--glass); backdrop-filter: var(--blur); border: 1px solid var(--glass-border); border-radius: 16px; position: relative; z-index: 100;">
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <button @click="sidebarOpen = !sidebarOpen" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <button @click="sidebarOpen = !sidebarOpen" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.6rem; border-radius: 10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
-                <h2 style="font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em;">{% block page_title %}Dashboard{% endblock %}</h2>
+                <h2 style="font-size: 1.25rem; font-weight: 700;">{% block page_title %}Dashboard{% endblock %}</h2>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 1.5rem;">
-                <div style="text-align: right;">
-                    <div style="font-weight: 700; font-size: 0.95rem; color: #fff;">{{ session.get('user_name', 'User') }}</div>
-                    <div style="font-size: 0.7rem; color: var(--gold-solid); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">{{ session.get('role', 'Member') }}</div>
-                </div>
-                <div style="width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent-gold), #b45309); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);">
-                    {{ session.get('user_name', 'U')[0].upper() }}
+            <!-- User Profile Dropdown -->
+            <div style="position: relative;">
+                <button @click="profileOpen = !profileOpen" @click.away="profileOpen = false" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">{{ session.get('user_name', 'User') }}</div>
+                        <div style="font-size: 0.65rem; color: var(--gold-solid); font-weight: 800; text-transform: uppercase;">{{ session.get('role', 'Member') }}</div>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-gold), #b45309); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000;">
+                        {{ session.get('user_name', 'U')[0].upper() }}
+                    </div>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div x-show="profileOpen" x-transition class="glass-card" style="position: absolute; top: 55px; right: 0; width: 220px; z-index: 2000; padding: 0.5rem; border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                    <button @click="profileModalOpen = true; profileOpen = false" 
+                            hx-get="/api/profile/modal" 
+                            hx-target="#profile-modal-body"
+                            style="width: 100%; text-align: left; background: transparent; border: none; color: #fff; padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.8rem; font-size: 0.95rem; font-weight: 400;" 
+                            onmouseover="this.style.background='rgba(255,255,255,0.05)'" 
+                            onmouseout="this.style.background='transparent'">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Lihat Profil</span>
+                    </button>
+                    <a href="/logout" style="width: 100%; text-decoration: none; color: #fca5a5; padding: 0.8rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.8rem; font-size: 0.95rem; font-weight: 400;" onmouseover="this.style.background='rgba(239,68,68,0.05)'" onmouseout="this.style.background='transparent'">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        <span>Keluar Sistem</span>
+                    </a>
                 </div>
             </div>
         </header>
@@ -75,5 +107,67 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    <!-- Floating Chatbot Button -->
+    <div x-data="{ chatOpen: false }" class="fixed-chatbot" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1000;">
+        <!-- Button -->
+        <button @click="chatOpen = !chatOpen" style="width: 60px; height: 60px; border-radius: 50%; background: var(--accent-gold); border: none; color: #000; cursor: pointer; box-shadow: 0 8px 32px rgba(217, 119, 6, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.3s; transform: scale(1);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <template x-if="!chatOpen">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </template>
+            <template x-if="chatOpen">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </template>
+        </button>
+
+        <!-- Chat Window -->
+        <div x-show="chatOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-10 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100" style="position: absolute; bottom: 80px; right: 0; width: 380px; height: 500px; background: var(--primary-dark); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 12px 48px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; backdrop-filter: blur(20px);">
+            <!-- Header -->
+            <div style="padding: 1.25rem; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 35px; height: 35px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1rem;">🤖</div>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem;">CS AI Assistant</div>
+                    <div style="font-size: 0.7rem; color: var(--accent);">Online | Siap Membantu</div>
+                </div>
+            </div>
+            <!-- Messages -->
+            <div id="floating-chat-window" style="flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+                <div class="chat-msg-bot" style="align-self: flex-start; background: rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: 0 12px 12px 12px; font-size: 0.85rem; border: 1px solid var(--glass-border);">
+                    Assalamualaikum! Ada yang bisa saya bantu terkait produk atau layanan kami?
+                </div>
+            </div>
+            <!-- Input -->
+            <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border);">
+                <form hx-post="/api/chatbot/ask" hx-target="#floating-chat-window" hx-swap="beforeend" hx-on::after-request="this.reset(); document.getElementById('floating-chat-window').scrollTo(0, document.getElementById('floating-chat-window').scrollHeight)" style="display: flex; gap: 0.5rem;">
+                    <input type="text" name="message" placeholder="Tanya sesuatu..." style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.6rem 1rem; color: #fff; font-size: 0.85rem;">
+                    <button type="submit" style="background: var(--accent-gold); border: none; border-radius: 10px; padding: 0.6rem; color: #000; cursor: pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .chat-msg-user { align-self: flex-end; background: var(--accent); color: #fff; padding: 0.75rem 1rem; border-radius: 12px 12px 0 12px; font-size: 0.85rem; max-width: 85%; }
+        .chat-msg-bot { align-self: flex-start; background: rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: 0 12px 12px 12px; font-size: 0.85rem; max-width: 85%; border: 1px solid var(--glass-border); }
+    </style>
+
+    <!-- Profile Modal (At the very bottom for maximum z-index priority) -->
+    <div x-show="profileModalOpen" class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+        <div @click.away="profileModalOpen = false" class="glass-card animate-up" style="width: 100%; max-width: 800px; padding: 3rem; position: relative; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);">
+            <button @click="profileModalOpen = false" style="position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: var(--accent-gold); border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; font-size: 1.5rem;">Informasi & Pembaruan Profil</h3>
+            
+            <div id="profile-modal-body">
+                <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <div class="loader" style="margin: 0 auto 1rem;"></div>
+                    Memuat data profil...
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

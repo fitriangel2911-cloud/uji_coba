@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block page_title %}Kasir Setoran CS{% endblock %}
+
+{% block content %}
+<div class="glass-card animate-up" style="max-width: 600px; margin: 0 auto; padding: 2.5rem;">
+    <h3 style="margin-bottom: 0.5rem; color: var(--accent-gold);">Input Setoran Anggota</h3>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem;">Gunakan menu ini untuk mencatat setoran tunai atau angsuran anggota.</p>
+    
+    <div id="kasir-alert"></div>
+
+    <form hx-post="/api/finance/kasir" hx-target="#kasir-alert">
+        <div class="form-group">
+            <label>ID / Nama Anggota</label>
+            <input type="text" name="member_id" class="form-control" required placeholder="Masukkan User ID Anggota">
+            <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.4rem;">* Masukkan UUID anggota dari profiles.</p>
+        </div>
+        
+        <div class="form-group">
+            <label>Jumlah Setoran (Rp)</label>
+            <input type="number" name="amount" class="form-control" required placeholder="Contoh: 1000000">
+        </div>
+        
+        <div class="form-group">
+            <label>Jenis Transaksi</label>
+            <select name="type" class="form-control">
+                <option value="setoran">Setoran Simpanan</option>
+                <option value="angsuran">Pembayaran Angsuran</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn-gold" style="width: 100%; justify-content: center; margin-top: 1rem;">
+            Catat Transaksi Kasir
+        </button>
+    </form>
+
+    <div style="margin-top: 4rem;">
+        <h4 style="margin-bottom: 1.5rem; color: #fff; font-size: 1.1rem;">Riwayat Transaksi Terakhir</h4>
+        <div class="glass-card" style="padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead style="background: rgba(255,255,255,0.02); color: var(--text-muted);">
+                    <tr style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <th style="padding: 1rem;">Anggota</th>
+                        <th style="padding: 1rem;">Tipe</th>
+                        <th style="padding: 1rem;">Nominal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                        <td style="padding: 1rem;">
+                            <div style="font-weight: 600;">{{ item.members.full_name if item.members else item.member_id }}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ item.created_at[:16].replace('T', ' ') }}</div>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">{{ item.transaction_type }}</span>
+                        </td>
+                        <td style="padding: 1rem; font-weight: 700; color: #10b981;">
+                            Rp {{ "{:,.0f}".format(item.amount) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not history %}
+                    <tr>
+                        <td colspan="3" style="padding: 2rem; text-align: center; color: var(--text-muted);">Belum ada transaksi hari ini.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

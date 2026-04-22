@@ -1,24 +1,27 @@
 {% for m in members %}
 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
     <td style="padding: 1rem; font-weight: 600;">{{ m.full_name }}</td>
-    <td style="padding: 1rem; font-family: monospace;">{{ m.identity_number }}</td>
-    <td style="padding: 1rem;">{{ m.contract_type.capitalize() }}</td>
+    <td style="padding: 1rem; font-size: 0.85rem;">
+        <div>{{ m.phone_number }}</div>
+        <div style="color: var(--text-muted);">{{ m.email }}</div>
+    </td>
+    <td style="padding: 1rem;">{{ m.akad if m.akad else '-' }}</td>
     <td style="padding: 1rem;">
         <span style="padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; 
-              background: {{ 'rgba(16,185,129,0.1)' if m.status == 'active' else 'rgba(239,68,68,0.1)' }};
-              color: {{ 'var(--accent)' if m.status == 'active' else '#fca5a5' }};">
-            {{ m.status.upper() }}
+              background: {{ 'rgba(16,185,129,0.1)' if m.role == 'member_active' else 'rgba(251,191,36,0.1)' }};
+              color: {{ 'var(--accent)' if m.role == 'member_active' else 'var(--accent-gold)' }};">
+            {{ 'TERDAFTAR' if m.role == 'member' else 'AKTIF' }}
         </span>
     </td>
     <td style="padding: 1rem;">
-        {% if m.status == 'pending' %}
+        {% if m.role == 'member' %}
         <form hx-post="/api/kyc/verify" hx-target="#member-list" style="display: flex; gap: 0.5rem;">
             <input type="hidden" name="member_id" value="{{ m.id }}">
-            <button name="status" value="active" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Setujui</button>
-            <button name="status" value="rejected" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: #ef4444;">Tolak</button>
+            <button name="status" value="active" class="btn-gold" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; height: auto;">Setujui</button>
+            <button name="status" value="rejected" class="btn-outline-gold" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; height: auto; border-color: #ef4444; color: #fca5a5;">Tolak</button>
         </form>
         {% else %}
-        -
+        <span style="color: var(--text-muted); font-size: 0.85rem;">Selesai</span>
         {% endif %}
     </td>
 </tr>

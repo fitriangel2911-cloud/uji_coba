@@ -3,26 +3,41 @@
 {% block page_title %}Dashboard Admin{% endblock %}
 
 {% block content %}
-<div class="animate-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
-    <div class="glass-card" style="padding: 1.5rem;">
-        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Total Anggota</div>
-        <div style="font-size: 2rem; font-weight: 800; color: var(--accent);">{{ stats.total_members }}</div>
+<div class="animate-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="glass-card" style="padding: 1.8rem; border-left: 4px solid var(--accent-gold);">
+        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Total Anggota</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #fff;">{{ stats.total_members }}</div>
     </div>
-    <div class="glass-card" style="padding: 1.5rem;">
-        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Saldo Kas Utama</div>
-        <div style="font-size: 2rem; font-weight: 800; color: #fbbf24;">{{ stats.cash_balance }}</div>
+    <div class="glass-card" style="padding: 1.8rem; border-left: 4px solid #fbbf24;">
+        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Saldo Kas Operasional</div>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #fbbf24;">{{ stats.cash_balance }}</div>
     </div>
-    <div class="glass-card" style="padding: 1.5rem;">
-        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Compliance Rate</div>
-        <div style="font-size: 2rem; font-weight: 800; color: #60a5fa;">{{ stats.compliance }}</div>
+    {% if role in ('bendahara', 'manager') %}
+    <div class="glass-card" style="padding: 1.8rem; border-left: 4px solid #f59e0b;">
+        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Perlu Persetujuan</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #f59e0b;">{{ stats.pending_approvals }}</div>
     </div>
+    {% endif %}
 </div>
 
-<div class="glass-card animate-up" style="padding: 2rem;">
-    <h3 style="margin-bottom: 1.5rem;">Quick Actions</h3>
-    <div style="display: flex; gap: 1rem;">
-        <a href="/kyc" class="btn-primary">Verifikasi Anggota</a>
-        <a href="/finance" class="btn-primary" style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);">Input Keuangan</a>
+<div class="glass-card animate-up" style="padding: 2.5rem; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; right: 0; padding: 1rem; font-size: 0.7rem; font-weight: 900; color: var(--accent-gold); opacity: 0.2; text-transform: uppercase;">Akses: {{ role }}</div>
+    <h3 style="margin-bottom: 2rem; font-size: 1.4rem;">Menu Operasional {{ role.upper() }}</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem;">
+        {% if role == 'cs' or role == 'admin' %}
+            <a href="/kyc" class="btn-gold" style="text-decoration: none; text-align: center; padding: 1rem;">Verifikasi Anggota</a>
+            <a href="/finance/kasir" class="btn-outline-gold" style="text-decoration: none; text-align: center; padding: 1rem;">Kasir Setoran</a>
+            <a href="/finance/financing" class="btn-outline-gold" style="text-decoration: none; text-align: center; padding: 1rem;">Rekomendasi Pembiayaan</a>
+        {% endif %}
+
+        {% if role == 'bendahara' or role == 'admin' %}
+            <a href="/finance/approvals" class="btn-gold" style="text-decoration: none; text-align: center; padding: 1rem;">Approval (≤ 15 Juta)</a>
+        {% endif %}
+
+        {% if role == 'manager' or role == 'admin' %}
+            <a href="/finance/approvals" class="btn-gold" style="text-decoration: none; text-align: center; padding: 1rem; background: linear-gradient(135deg, #d97706, #92400e);">Approval (> 15 Juta)</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

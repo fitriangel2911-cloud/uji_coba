@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block page_title %}Rekomendasi Pembiayaan{% endblock %}
+
+{% block content %}
+<div class="glass-card animate-up" style="max-width: 700px; margin: 0 auto; padding: 2.5rem;">
+    <h3 style="margin-bottom: 0.5rem; color: var(--accent-gold);">Pengajuan & Rekomendasi CS</h3>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem;">Silakan lengkapi data pembiayaan anggota untuk diteruskan ke otoritas terkait.</p>
+    
+    <div id="financing-alert"></div>
+
+    <form hx-post="/api/finance/recommend" hx-target="#financing-alert">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="form-group">
+                <label>Nama Anggota</label>
+                <input type="text" name="member_name" class="form-control" required placeholder="Nama lengkap anggota">
+            </div>
+            <div class="form-group">
+                <label>Pilihan Akad</label>
+                <select name="contract_type" class="form-control">
+                    <option value="Musyarakah">Musyarakah</option>
+                    <option value="Ijarah">Ijarah</option>
+                    <option value="Murabahah">Murabahah</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Nominal Pembiayaan (Rp)</label>
+            <input type="number" name="amount" class="form-control" required placeholder="Contoh: 15000000">
+            <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.4rem;">
+                * ≤ 15 Juta akan diteruskan ke Bendahara.<br>
+                * > 15 Juta akan diteruskan ke Manager.
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label>Tujuan Pembiayaan</label>
+            <textarea name="purpose" class="form-control" style="height: 100px;" required placeholder="Jelaskan kebutuhan pembiayaan anggota..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Catatan Rekomendasi CS</label>
+            <textarea name="recommendation_note" class="form-control" style="height: 80px;" placeholder="Tulis alasan kenapa ini direkomendasikan..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-gold" style="width: 100%; justify-content: center; margin-top: 1rem;">
+            Kirim Rekomendasi ke Atasan
+        </button>
+    </form>
+
+    <div style="margin-top: 4rem;">
+        <h4 style="margin-bottom: 1.5rem; color: #fff; font-size: 1.1rem;">Riwayat Rekomendasi Anda</h4>
+        <div class="glass-card" style="padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead style="background: rgba(255,255,255,0.02); color: var(--text-muted);">
+                    <tr style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <th style="padding: 1rem;">Anggota</th>
+                        <th style="padding: 1rem;">Nominal</th>
+                        <th style="padding: 1rem;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in recommendations %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                        <td style="padding: 1rem;">
+                            <div style="font-weight: 600;">{{ rec.member_name }}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ rec.created_at[:10] }}</div>
+                        </td>
+                        <td style="padding: 1rem; font-weight: 700; color: var(--accent-gold);">
+                            Rp {{ "{:,.0f}".format(rec.amount) }}
+                        </td>
+                        <td style="padding: 1rem;">
+                            <span style="padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+                                background: {{ 'rgba(16,185,129,0.1)' if rec.status == 'approved' else 'rgba(239,68,68,0.1)' if rec.status == 'rejected' else 'rgba(251,191,36,0.1)' }};
+                                color: {{ '#10b981' if rec.status == 'approved' else '#fca5a5' if rec.status == 'rejected' else 'var(--accent-gold)' }};">
+                                {{ rec.status.upper() }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not recommendations %}
+                    <tr>
+                        <td colspan="3" style="padding: 2rem; text-align: center; color: var(--text-muted);">Belum ada riwayat rekomendasi.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

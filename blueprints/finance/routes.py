@@ -1,27 +1,103 @@
 from flask import Blueprint, render_template, request, session
-from decorators import admin_required
+from decorators import admin_required, active_member_required
 from models.finance_model import FinanceModel
 
 finance_bp = Blueprint('finance', __name__)
 
+@finance_bp.route('/finance/apply')
+@active_member_required
+def apply():
+    # Interface for members to apply for financing
+    user_name = session.get('user_name')
+    apps = FinanceModel.get_applications_for_member(user_name)
+    return render_template('finance/member_apply.html', apps=apps)
+
+@finance_bp.route('/api/finance/apply', methods=['POST'])
+@active_member_required
+def api_apply():
+    data = {
+        "member_name": session.get("user_name"),
+        "amount": request.form.get("amount"),
+        "contract_type": request.form.get("contract_type"),
+        "purpose": request.form.get("purpose"),
+        "status": "recommended", # Directly enter recommendation queue
+        "recommended_by": "self"
+    }
+    res = FinanceModel.create_application(data)
+    if res:
+        return '<div class="alert-success">Pengajuan Pembiayaan Berhasil Dikirim! Mohon tunggu verifikasi.</div>'
+    return '<div class="alert-error">Gagal mengirim pengajuan.</div>'
+
 @finance_bp.route('/finance')
 @admin_required
 def index():
-    journals = FinanceModel.get_recent_journals()
-    return render_template('finance/index.html', journals=journals)
+    # Regular finance index (ledger/journals)
+    return render_template('finance/index.html')
 
-@finance_bp.route('/api/finance/entry', methods=['POST'])
+@finance_bp.route('/finance/kasir')
 @admin_required
-def create_entry():
-    desc = request.form.get("description")
-    amount = request.form.get("amount")
-    type = request.form.get("type")
-    
-    res = FinanceModel.log_journal(desc, amount, type)
-    
+def kasir():
+    # Interface for CS to record deposits
+    user_id = session.get('user_id')
+    history = FinanceModel.get_cashier_transactions(user_id)
+    return render_template('finance/kasir.html', history=history)
+
+@finance_bp.route('/finance/financing')
+@admin_required
+def financing():
+    # Interface for CS to recommend financing
+    user_id = session.get('user_id')
+    recommendations = FinanceModel.get_applications_by_recommender(user_id)
+    return render_template('finance/financing.html', recommendations=recommendations)
+
+@finance_bp.route('/finance/approvals')
+@admin_required
+def approvals():
+    # Interface for Bendahara & Manager to approve
+    role = session.get('role')
+    apps = FinanceModel.get_applications_for_approval(role)
+    return render_template('finance/approvals.html', apps=apps, role=role)
+
+@finance_bp.route('/api/finance/kasir', methods=['POST'])
+@admin_required
+def api_kasir():
+    data = {
+        "member_id": request.form.get("member_id"),
+        "amount": request.form.get("amount"),
+        "transaction_type": request.form.get("type"),
+        "recorded_by": session.get("user_id")
+    }
+    res = FinanceModel.record_cashier_transaction(data)
     if res:
-        journals = FinanceModel.get_recent_journals()
-        table = render_template('finance/journal_rows.html', journals=journals)
-        toast = f'<div hx-swap-oob="innerHTML:#toast-container"><div class="alert-success">Transaksi berhasil dicatat!</div></div>'
-        return table + toast
-    return '<div class="alert-error">Gagal mencatat transaksi.</div>'
+        return '<div class="alert-success">Setoran berhasil dicatat!</div>'
+    return '<div class="alert-error">Gagal mencatat setoran.</div>'
+
+@finance_bp.route('/api/finance/recommend', methods=['POST'])
+@admin_required
+def api_recommend():
+    data = {
+        "member_name": request.form.get("member_name"),
+        "amount": request.form.get("amount"),
+        "contract_type": request.form.get("contract_type"),
+        "purpose": request.form.get("purpose"),
+        "recommendation_note": request.form.get("recommendation_note"),
+        "status": "recommended",
+        "recommended_by": session.get("user_id")
+    }
+    res = FinanceModel.create_application(data)
+    if res:
+        return f'<div class="alert-success">Rekomendasi Pembiayaan Rp {int(data["amount"]):,} Berhasil Dikirim!</div>'
+    return '<div class="alert-error">Gagal mengirim rekomendasi.</div>'
+
+@finance_bp.route('/api/finance/approve', methods=['POST'])
+@admin_required
+def api_approve():
+    app_id = request.form.get("app_id")
+    status = request.form.get("status") # approved/rejected
+    role = session.get('role')
+    
+    res = FinanceModel.update_application_status(app_id, status, session.get('user_id'))
+    if res:
+        apps = FinanceModel.get_applications_for_approval(role)
+        return render_template('components/financing_rows.html', apps=apps, role=role)
+    return '<div class="alert-error">Gagal memproses persetujuan.</div>'

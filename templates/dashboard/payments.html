@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block page_title %}Riwayat Pembayaran{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <!-- Header Page -->
+    <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem; border-left: 5px solid var(--accent-gold);">
+        <h2 style="margin-bottom: 0.5rem; font-size: 2rem; color: var(--accent-gold);">Riwayat Pembayaran</h2>
+        <p style="color: var(--text-muted); font-size: 1.05rem;">
+            Daftar seluruh setoran simpanan pokok dan wajib Anda.
+        </p>
+    </div>
+
+    <!-- Summary Asset di Halaman Riwayat -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+        <div class="glass-card" style="padding: 1.5rem; background: rgba(255,255,255,0.02);">
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Total Simpanan Pokok</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp {{ "{:,.0f}".format(savings.pokok) if savings else '0' }}</div>
+        </div>
+        <div class="glass-card" style="padding: 1.5rem; background: rgba(255,255,255,0.02);">
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Total Simpanan Wajib</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp {{ "{:,.0f}".format(savings.wajib) if savings else '0' }}</div>
+        </div>
+        <div class="glass-card" style="padding: 1.5rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2);">
+            <div style="color: var(--accent); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Total Aset Terkumpul</div>
+            <div style="font-size: 1.5rem; font-weight: 900; color: #fff;">Rp {{ "{:,.0f}".format(savings.total_aset) if savings else '0' }}</div>
+        </div>
+    </div>
+
+    <!-- Table Riwayat Penuh -->
+    <div class="glass-card" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h3 style="font-size: 1.25rem;">Daftar Transaksi</h3>
+            <button class="btn-outline-gold" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Cetak Mutasi</button>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 1rem;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 2px solid var(--glass-border); color: var(--text-muted);">
+                        <th style="padding: 1rem 0.5rem;">Bulan Pembayaran</th>
+                        <th style="padding: 1rem 0.5rem;">Jenis Simpanan</th>
+                        <th style="padding: 1rem 0.5rem; text-align: right;">Nominal</th>
+                        <th style="padding: 1rem 0.5rem; text-align: center;">Status</th>
+                        <th style="padding: 1rem 0.5rem;">Tgl. Transaksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 1.25rem 0.5rem; font-weight: 600;">{{ payment.payment_month }}</td>
+                        <td style="padding: 1.25rem 0.5rem;">
+                            <span style="color: {{ 'var(--accent-gold)' if payment.payment_type == 'pokok' else '#10b981' }}; font-weight: 700;">
+                                {{ payment.payment_type.upper() }}
+                            </span>
+                        </td>
+                        <td style="padding: 1.25rem 0.5rem; text-align: right; font-weight: 800; font-size: 1.1rem;">Rp {{ "{:,.0f}".format(payment.amount) }}</td>
+                        <td style="padding: 1.25rem 0.5rem; text-align: center;">
+                            {% if payment.status == 'lunas' %}
+                                <span style="background: rgba(16,185,129,0.15); color: #10b981; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 900;">LUNAS</span>
+                            {% else %}
+                                <span style="background: rgba(251,191,36,0.15); color: var(--accent-gold); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 900;">PENDING</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1.25rem 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                            {{ payment.created_at[:10] }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    {% if not payments %}
+                    <tr>
+                        <td colspan="5" style="padding: 4rem; text-align: center; color: var(--text-muted);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">💸</div>
+                            <p>Belum ada riwayat pembayaran yang tercatat.</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

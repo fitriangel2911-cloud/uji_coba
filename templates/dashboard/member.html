@@ -5,35 +5,113 @@
 {% block content %}
 <div class="animate-up">
     <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem; border-left: 5px solid var(--accent);">
-        <h2 style="margin-bottom: 0.5rem;">Selamat Datang, {{ user_name }}!</h2>
-        <p style="color: var(--text-muted);">
-            {% if role == 'demo' %}
-            Anda sedang berada dalam <strong>Mode Demonstrasi</strong>. Silakan jelajahi fitur sistem.
-            {% else %}
+        <h2 style="margin-bottom: 0.5rem; font-size: 2rem;">Selamat Datang, {{ user_name }}!</h2>
+        <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6;">
             Terima kasih telah menjadi bagian dari Koperasi Syariah IQ-RA.
-            {% endif %}
         </p>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem;">
-        <div class="glass-card" style="padding: 2rem;">
-            <h3 style="margin-bottom: 1.5rem;">Status Keanggotaan</h3>
-            {% if member %}
-                <div style="padding: 1rem; border-radius: 10px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); text-align: center;">
-                    <div style="font-size: 1.25rem; font-weight: 800; color: var(--accent);">{{ member.status.upper() }}</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Terdaftar sejak {{ member.submission_date }}</div>
+    <!-- Financial Summary Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+        <!-- Simpanan Pokok -->
+        <div class="glass-card" style="padding: 1.5rem; border-bottom: 4px solid var(--accent-gold); background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(217, 119, 6, 0.05) 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div style="width: 45px; height: 45px; background: rgba(217, 119, 6, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent-gold);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
-            {% else %}
-                <div style="text-align: center; padding: 2rem;">
-                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Anda belum melengkapi data KYC (Kenali Nasabah).</p>
-                    <a href="/kyc" class="btn-primary">Lengkapi Data Sekarang</a>
-                </div>
-            {% endif %}
+                <span style="font-size: 0.7rem; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.1em;">Simpanan Pokok</span>
+            </div>
+            <div style="font-size: 1.75rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">Rp {{ "{:,.0f}".format(savings.pokok) if savings else '0' }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Modal Awal Keanggotaan</div>
         </div>
 
+        <!-- Simpanan Wajib -->
+        <div class="glass-card" style="padding: 1.5rem; border-bottom: 4px solid #10b981; background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(16, 185, 129, 0.05) 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div style="width: 45px; height: 45px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #10b981;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                </div>
+                <span style="font-size: 0.7rem; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.1em;">Simpanan Wajib</span>
+            </div>
+            <div style="font-size: 1.75rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">Rp {{ "{:,.0f}".format(savings.wajib) if savings else '0' }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Akumulasi Setoran Bulanan</div>
+        </div>
+
+        <!-- Total Aset -->
+        <div class="glass-card" style="padding: 1.5rem; border-bottom: 4px solid var(--accent); background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(139, 92, 246, 0.05) 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div style="width: 45px; height: 45px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </div>
+                <span style="font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;">Total Aset</span>
+            </div>
+            <div style="font-size: 1.75rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">Rp {{ "{:,.0f}".format(savings.total_aset) if savings else '0' }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Total Saldo Simpanan</div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; align-items: flex-start;">
+        <!-- Kolom Kiri: Fokus Keanggotaan & Keuangan -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Status Keanggotaan -->
+            <div class="glass-card" style="padding: 2rem; border-left: 4px solid var(--accent-gold);">
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.1em;">Status Keanggotaan</h3>
+                <div style="padding: 1.5rem; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.02);">
+                    {% if role == 'member_active' %}
+                        <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em;">AKTIF</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Selamat! Anda sudah menjadi anggota resmi.</div>
+                    {% elif role == 'member_rejected' %}
+                        <div style="font-size: 1.5rem; font-weight: 900; color: #ef4444; text-transform: uppercase;">DITOLAK</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Pendaftaran Anda belum dapat kami proses.</div>
+                    {% else %}
+                        <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent-gold); text-transform: uppercase;">MENUNGGU</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Sedang diverifikasi oleh Customer Service.</div>
+                    {% endif %}
+                </div>
+                
+                {% if role == 'member' %}
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <a href="/kyc" class="btn-outline-gold" style="width: 100%; border-color: rgba(251, 191, 36, 0.3); padding: 0.75rem; font-size: 0.9rem;">Lengkapi Data KYC</a>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Kolom Kanan: Pengajuan -->
         <div class="glass-card" style="padding: 2rem;">
-            <h3 style="margin-bottom: 1.5rem;">Ringkasan Simpanan</h3>
-            <div style="color: var(--text-muted); font-style: italic;">Fitur ini akan segera hadir...</div>
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.35rem;">Pengajuan Pembiayaan</h3>
+            <div class="glass-card" style="padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+                    <thead style="background: rgba(255,255,255,0.02); color: var(--text-muted);">
+                        <tr style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <th style="padding: 1rem;">Tanggal</th>
+                            <th style="padding: 1rem;">Nominal</th>
+                            <th style="padding: 1rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in financing_apps %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                            <td style="padding: 1rem; color: var(--text-muted);">{{ app.created_at[:10] }}</td>
+                            <td style="padding: 1rem; font-weight: 700; font-size: 1rem;">Rp {{ "{:,.0f}".format(app.amount) }}</td>
+                            <td style="padding: 1rem;">
+                                <span style="padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;
+                                    background: {{ 'rgba(16,185,129,0.1)' if app.status == 'approved' else 'rgba(239,68,68,0.1)' if app.status == 'rejected' else 'rgba(251,191,36,0.1)' }};
+                                    color: {{ '#10b981' if app.status == 'approved' else '#fca5a5' if app.status == 'rejected' else 'var(--accent-gold)' }};">
+                                    {{ app.status.upper() }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not financing_apps %}
+            <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                <p>Belum ada riwayat pengajuan pembiayaan.</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

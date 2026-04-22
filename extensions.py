@@ -20,3 +20,5 @@ class SupabaseExtensions:
         self.db_admin: Client = create_client(self.url, self.service_key or self.key) if self.url and (self.service_key or self.key) else None
 
 sp = SupabaseExtensions()
+supabase = sp.db
+supabase_admin = sp.db_admin

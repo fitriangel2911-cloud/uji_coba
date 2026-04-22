@@ -37,23 +37,49 @@
                             <label>Nomor Induk Kependudukan (NIK)</label>
                             <input type="text" name="identity_number" class="form-control" required>
                         </div>
+                        <div class="form-group">
+                            <label>Nomor Kartu Keluarga (No. KK)</label>
+                            <input type="text" name="family_card_number" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Agama</label>
+                            <select name="religion" class="form-control" required>
+                                <option value="Islam">Islam</option>
+                                <option value="Kristen">Kristen</option>
+                                <option value="Katolik">Katolik</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Budha">Budha</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Alamat Lengkap</label>
-                        <textarea name="address" class="form-control" rows="3" required></textarea>
+                        <label>Alamat Lengkap (sesuai KTP)</label>
+                        <textarea name="address" class="form-control" rows="2" required></textarea>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>Nama Ibu Kandung</label>
+                            <input type="text" name="mother_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Penghasilan Per Bulan (Rp)</label>
+                            <input type="number" name="income" class="form-control" required placeholder="Contoh: 5000000">
+                        </div>
+                        <div class="form-group">
+                            <label>NPWP (Jika ada)</label>
+                            <input type="text" name="npwp" class="form-control">
+                        </div>
                         <div class="form-group">
                             <label>Nomor WhatsApp</label>
                             <input type="text" name="phone_number" class="form-control" required placeholder="0812...">
                         </div>
-                        <div class="form-group">
-                            <label>Pilihan Akad</label>
-                            <select name="contract_type" class="form-control" required>
-                                <option value="wadi'ah">Simpanan Wadi'ah</option>
-                                <option value="mudharabah">Investasi Mudharabah</option>
-                            </select>
-                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Pilihan Akad Utama</label>
+                        <select name="contract_type" class="form-control" required>
+                            <option value="Musyarakah">Musyarakah (Kerja Sama Modal)</option>
+                        </select>
                     </div>
                     <div class="form-group" style="margin: 2rem 0;">
                         <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">

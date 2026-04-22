@@ -10,12 +10,23 @@ def index():
     user_id = session.get('user_id')
     role = session.get('role')
     
-    if role in ('admin', 'staff'):
-        members = MemberModel.get_all_members()
+    if role in ('admin', 'staff', 'cs', 'bendahara', 'manager'):
+        query = request.args.get('q')
+        members = MemberModel.get_all_members(query)
+        
+        if request.headers.get('HX-Request'):
+            return render_template('components/member_rows.html', members=members)
+            
         return render_template('kyc/admin_index.html', members=members)
     
     # Member view
     member = MemberModel.get_member_by_user_id(user_id)
+    
+    # Sinkronisasi Otomatis: Jika role sudah aktif tapi status anggota masih pending, perbaiki otomatis.
+    if role == 'member_active' and member and member.get('status') == 'pending':
+        MemberModel.update_status(user_id, 'active')
+        member['status'] = 'active'
+        
     return render_template('kyc/member_view.html', member=member)
 
 @kyc_bp.route('/api/kyc/submit', methods=['POST'])
@@ -25,7 +36,12 @@ def submit():
     data = {
         "full_name": request.form.get("full_name"),
         "identity_number": request.form.get("identity_number"),
+        "family_card_number": request.form.get("family_card_number"),
+        "religion": request.form.get("religion"),
         "address": request.form.get("address"),
+        "mother_name": request.form.get("mother_name"),
+        "income": request.form.get("income"),
+        "npwp": request.form.get("npwp"),
         "phone_number": request.form.get("phone_number"),
         "contract_type": request.form.get("contract_type"),
         "is_contract_accepted": request.form.get("is_contract_accepted")
