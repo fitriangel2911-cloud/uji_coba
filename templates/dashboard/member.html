@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block page_title %}Beranda Anggota{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem; border-left: 5px solid var(--accent);">
+        <h2 style="margin-bottom: 0.5rem;">Selamat Datang, {{ user_name }}!</h2>
+        <p style="color: var(--text-muted);">
+            {% if role == 'demo' %}
+            Anda sedang berada dalam <strong>Mode Demonstrasi</strong>. Silakan jelajahi fitur sistem.
+            {% else %}
+            Terima kasih telah menjadi bagian dari Koperasi Syariah IQ-RA.
+            {% endif %}
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+        <div class="glass-card" style="padding: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Status Keanggotaan</h3>
+            {% if member %}
+                <div style="padding: 1rem; border-radius: 10px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 800; color: var(--accent);">{{ member.status.upper() }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Terdaftar sejak {{ member.submission_date }}</div>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 2rem;">
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Anda belum melengkapi data KYC (Kenali Nasabah).</p>
+                    <a href="/kyc" class="btn-primary">Lengkapi Data Sekarang</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="glass-card" style="padding: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Ringkasan Simpanan</h3>
+            <div style="color: var(--text-muted); font-style: italic;">Fitur ini akan segera hadir...</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

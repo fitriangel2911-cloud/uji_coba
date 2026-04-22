@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_title %}Manajemen Anggota (KYC){% endblock %}
+
+{% block content %}
+<div class="glass-card animate-up" style="padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h3>Daftar Calon Anggota</h3>
+        <input type="text" placeholder="Cari NIK/Nama..." class="form-control" style="max-width: 300px;" 
+               hx-get="/kyc" hx-trigger="keyup changed delay:500ms" hx-target="#member-list">
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="text-align: left; color: var(--text-muted); border-bottom: 1px solid var(--glass-border);">
+                <th style="padding: 1rem;">Nama</th>
+                <th style="padding: 1rem;">NIK</th>
+                <th style="padding: 1rem;">Akad</th>
+                <th style="padding: 1rem;">Status</th>
+                <th style="padding: 1rem;">Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="member-list">
+            {% include "components/member_rows.html" %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

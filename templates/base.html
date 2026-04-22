@@ -3,71 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IQ-RA System | Koperasi Syariah Digital</title>
-    <!-- Google Fonts: Outfit -->
+    <title>IQ-RA System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <!-- HTMX -->
     <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
-    <!-- Alpine JS -->
     <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body x-data="{ sidebarOpen: true }">
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar" x-show="sidebarOpen" x-transition:enter="transition ease-out duration-300" 
-               x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0">
-            <div class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span>IQ-RA SYSTEM</span>
+<body x-data="{ sidebarOpen: true }" class="bg-base text-main">
+    <aside class="sidebar" x-show="sidebarOpen" style="background: var(--primary-dark); border-right: 1px solid var(--glass-border);">
+        <div class="logo">
+            <div style="background: var(--accent-gold); padding: 4px; border-radius: 6px; color: var(--bg-base); display: flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+            <span style="font-weight: 800; font-size: 1.1rem; letter-spacing: 0.05em;">IQ-RA <span style="color: var(--accent-gold);">SYSTEM</span></span>
+        </div>
+        <nav style="flex: 1;">
+            <ul>
+                <li style="margin-bottom: 0.5rem;">
+                    <a href="/dashboard" class="{{ 'active' if request.path == '/dashboard' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/dashboard' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/dashboard' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/dashboard' else 'none' }};">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        <span>Beranda</span>
+                    </a>
+                </li>
+                <li style="margin-bottom: 0.5rem;">
+                    <a href="/kyc" class="{{ 'active' if request.path == '/kyc' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/kyc' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/kyc' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/kyc' else 'none' }};">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span>Keanggotaan</span>
+                    </a>
+                </li>
+                {% if session.get('role') in ('admin', 'staff') %}
+                <li style="margin-bottom: 0.5rem;">
+                    <a href="/finance" class="{{ 'active' if request.path == '/finance' else '' }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; text-decoration: none; border-radius: 12px; transition: var(--transition); color: {{ 'var(--gold-solid)' if request.path == '/finance' else 'var(--text-muted)' }}; background: {{ 'rgba(251, 191, 36, 0.05)' if request.path == '/finance' else 'transparent' }}; border-left: {{ '3px solid var(--gold-solid)' if request.path == '/finance' else 'none' }};">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <span>Keuangan</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
+            <a href="/logout" style="color: #fca5a5; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 0.6rem; opacity: 0.8; transition: var(--transition);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Keluar Sistem</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; padding: 1.25rem 2rem; background: var(--glass); backdrop-filter: var(--blur); border: 1px solid var(--glass-border); border-radius: 16px;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button @click="sidebarOpen = !sidebarOpen" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <h2 style="font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em;">{% block page_title %}Dashboard{% endblock %}</h2>
             </div>
             
-            <nav>
-                <ul>
-                    <li><a href="/" class="{{ 'active' if request.path == '/' else '' }}">Beranda</a></li>
-                    <li><a href="/kyc" class="{{ 'active' if '/kyc' in request.path else '' }}">Keanggotaan (KYC)</a></li>
-                    <li><a href="/finance" class="{{ 'active' if '/finance' in request.path else '' }}">Pusat Keuangan</a></li>
-                    <li><a href="#">Simulasi Perbankan</a></li>
-                    <li><a href="#">Laporan Keuangan</a></li>
-                </ul>
-            </nav>
-
-            <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
-                <a href="#" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">Sharia Assistant (RAG)</a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="content">
-            <header class="top-bar">
-                <button @click="sidebarOpen = !sidebarOpen" class="btn-primary" style="padding: 0.5rem;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                </button>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <span>Fitri Angelina (Admin)</span>
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                        FA
-                    </div>
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 0.95rem; color: #fff;">{{ session.get('user_name', 'User') }}</div>
+                    <div style="font-size: 0.7rem; color: var(--gold-solid); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">{{ session.get('role', 'Member') }}</div>
                 </div>
-            </header>
-
-            <div id="main-content" class="animate-fade-in">
-                {% block content %}{% endblock %}
+                <div style="width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent-gold), #b45309); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);">
+                    {{ session.get('user_name', 'U')[0].upper() }}
+                </div>
             </div>
-        </main>
-        
-        <!-- Toast Notification Container -->
-        <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 50;"></div>
-    </div>
+        </header>
 
-    <script>
-        // HTMX indicator logic if needed
-        document.body.addEventListener('htmx:beforeSend', function(evt) {
-            // Can show a loader here
-        });
-    </script>
+        <div id="main-content" class="animate-up">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
 </body>
 </html>

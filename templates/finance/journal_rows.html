@@ -1,0 +1,16 @@
+{% for j in journals %}
+<tr style="border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;">
+    <td style="padding: 1rem;">
+        <div style="font-weight: 600;">{{ j.description }}</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ j.created_at }}</div>
+    </td>
+    <td style="padding: 1rem; font-family: monospace; color: var(--text-muted);">{{ j.reference }}</td>
+    <td style="padding: 1rem; text-align: right; color: {{ 'var(--accent)' if j.transaction_type == 'revenue' else '#f87171' }}; font-weight: 700;">
+        {{ '+' if j.transaction_type == 'revenue' else '-' }} Rp {{ "{:,}".format(j.amount|int) }}
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="3" style="padding: 2rem; text-align: center; color: var(--text-muted);">Belum ada transaksi tercatat.</td>
+</tr>
+{% endfor %}

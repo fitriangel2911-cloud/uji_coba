@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_title %}Dashboard Admin{% endblock %}
+
+{% block content %}
+<div class="animate-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="glass-card" style="padding: 1.5rem;">
+        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Total Anggota</div>
+        <div style="font-size: 2rem; font-weight: 800; color: var(--accent);">{{ stats.total_members }}</div>
+    </div>
+    <div class="glass-card" style="padding: 1.5rem;">
+        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Saldo Kas Utama</div>
+        <div style="font-size: 2rem; font-weight: 800; color: #fbbf24;">{{ stats.cash_balance }}</div>
+    </div>
+    <div class="glass-card" style="padding: 1.5rem;">
+        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Compliance Rate</div>
+        <div style="font-size: 2rem; font-weight: 800; color: #60a5fa;">{{ stats.compliance }}</div>
+    </div>
+</div>
+
+<div class="glass-card animate-up" style="padding: 2rem;">
+    <h3 style="margin-bottom: 1.5rem;">Quick Actions</h3>
+    <div style="display: flex; gap: 1rem;">
+        <a href="/kyc" class="btn-primary">Verifikasi Anggota</a>
+        <a href="/finance" class="btn-primary" style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);">Input Keuangan</a>
+    </div>
+</div>
+{% endblock %}

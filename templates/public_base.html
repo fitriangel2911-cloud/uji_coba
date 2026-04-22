@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IQ-RA | Koperasy Syariah Digital{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-base text-main">
+    <!-- Abstract Background Blob (Subtle) -->
+    <div style="position: fixed; top: -10%; left: -10%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%); z-index: -1; filter: blur(60px);"></div>
+    
+    <div class="public-container">
+        <!-- Header from Image -->
+        <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; border-bottom: 1px solid var(--glass-border); background: var(--glass); backdrop-filter: var(--blur); position: sticky; top: 0; z-index: 1000;">
+            <div class="logo" style="margin-bottom: 0;">
+                <div style="background: var(--accent-gold); padding: 5px; border-radius: 8px; color: var(--bg-base);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </div>
+                <span style="font-weight: 800; font-size: 1.4rem; color: #fff;">IQ-RA <span style="color: var(--accent-gold);">SYSTEM</span></span>
+            </div>
+
+            <!-- Nav Links -->
+            <nav style="display: flex; gap: 2.5rem; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.05em; color: rgba(255,255,255,0.8);">
+                <a href="#produk" style="text-decoration: none; color: inherit; transition: var(--transition);">PRODUK</a>
+                <a href="#profil" style="text-decoration: none; color: inherit; transition: var(--transition);">PROFIL</a>
+                <a href="#laporan" style="text-decoration: none; color: inherit; transition: var(--transition);">LAPORAN</a>
+            </nav>
+
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="/login-demo" class="btn-gold" style="padding: 0.6rem 1.25rem; font-size: 0.9rem;">Demo Sistem</a>
+                <a href="/login" style="color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Masuk</a>
+            </div>
+        </header>
+
+        <main class="public-content animate-up" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
