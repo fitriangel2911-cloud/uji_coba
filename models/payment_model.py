@@ -16,6 +16,24 @@ class PaymentModel:
             return []
 
     @staticmethod
+    def create_payment(user_id, data):
+        """Mencatat pengajuan pembayaran baru oleh anggota"""
+        try:
+            insert_data = {
+                "user_id": user_id,
+                "payment_type": data.get("payment_type"),
+                "amount": float(data.get("amount")),
+                "payment_month": data.get("payment_month"),
+                "proof_url": data.get("proof_url"),
+                "status": "pending",
+                "created_at": "now()"
+            }
+            return supabase.table('member_payments').insert(insert_data).execute()
+        except Exception as e:
+            print(f"Error creating payment: {e}")
+            return None
+
+    @staticmethod
     def get_savings_summary(user_id):
         """Menghitung ringkasan simpanan (Pokok, Wajib, Total Aset)"""
         try:

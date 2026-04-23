@@ -11,6 +11,20 @@
         </p>
     </div>
 
+    {% if needs_initial_payment %}
+    <!-- Alert Pembayaran Awal -->
+    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2.5rem; background: rgba(251, 191, 36, 0.1); border: 2px solid var(--accent-gold); display: flex; align-items: center; gap: 1.5rem;">
+        <div style="font-size: 2.5rem;">⚠️</div>
+        <div style="flex: 1;">
+            <h4 style="color: var(--accent-gold); margin-bottom: 0.25rem;">Aktivasi Simpanan Pokok Diperlukan</h4>
+            <p style="font-size: 0.9rem; color: var(--text-main);">
+                Keanggotaan Anda telah aktif! Segera lakukan setoran **Simpanan Pokok (Rp 2.000.000)** untuk memvalidasi hak keanggotaan penuh Anda.
+            </p>
+        </div>
+        <a href="/finance/deposit" class="btn-gold" style="padding: 0.75rem 1.5rem; font-size: 0.85rem;">Bayar Sekarang</a>
+    </div>
+    {% endif %}
+
     <!-- Financial Summary Cards -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
         <!-- Simpanan Pokok -->

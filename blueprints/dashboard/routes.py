@@ -70,12 +70,16 @@ def index():
     payments = PaymentModel.get_member_payments(user_id)
     savings = PaymentModel.get_savings_summary(user_id)
     
+    # Check if needs initial payment (Pokok)
+    needs_initial_payment = (role == 'member_active' and savings['pokok'] == 0)
+    
     return render_template('dashboard/member.html', 
                            user_name=user_name, 
                            profile=profile, 
                            financing_apps=financing_apps,
                            payments=payments,
                            savings=savings,
+                           needs_initial_payment=needs_initial_payment,
                            role=role)
 @dashboard_bp.route('/payments')
 @login_required

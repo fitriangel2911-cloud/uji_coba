@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
 from decorators import login_required, admin_required
 from models.member_model import MemberModel
+from extensions import sp
+import datetime
 
 kyc_bp = Blueprint('kyc', __name__)
 
@@ -33,6 +35,33 @@ def index():
 @login_required
 def submit():
     user_id = session.get('user_id')
+    
+    # Handle File Upload
+    payment_proof_url = None
+    if 'payment_proof' in request.files:
+        file = request.files['payment_proof']
+        if file.filename != '':
+            try:
+                # Generate unique filename
+                ext = file.filename.split('.')[-1]
+                filename = f"proof_{user_id}_{int(datetime.datetime.now().timestamp())}.{ext}"
+                file_content = file.read()
+                
+                # Upload to Supabase Storage (Bucket: member-files)
+                # Note: Bucket must be public or handled via policy
+                sp.db_admin.storage.from_("member-files").upload(
+                    path=filename,
+                    file=file_content,
+                    file_options={"content-type": file.content_type}
+                )
+                
+                # Get Public URL
+                res_url = sp.db_admin.storage.from_("member-files").get_public_url(filename)
+                payment_proof_url = res_url
+            except Exception as e:
+                print(f"Upload Error: {e}")
+                # Fallback: continue without URL if upload fails (or return error)
+    
     data = {
         "full_name": request.form.get("full_name"),
         "identity_number": request.form.get("identity_number"),
@@ -46,11 +75,11 @@ def submit():
         "contract_type": request.form.get("contract_type"),
         "is_contract_accepted": request.form.get("is_contract_accepted")
     }
-    # For now, we skip file upload logic to keep rebuild fast, or we can use previous logic.
-    res = MemberModel.create_member(user_id, data)
+    
+    res = MemberModel.create_member(user_id, data, payment_proof_url=payment_proof_url)
     
     if res:
-        return '<div class="alert-success">Data KYC berhasil dikirim! Menunggu verifikasi.</div>'
+        return '<div class="alert-success">Data KYC & Bukti Transfer berhasil dikirim! Menunggu verifikasi.</div>'
     return '<div class="alert-error">Gagal mengirim data. Coba lagi.</div>'
 
 @kyc_bp.route('/api/kyc/verify', methods=['POST'])

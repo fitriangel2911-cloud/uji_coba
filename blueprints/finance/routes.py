@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, session
 from decorators import admin_required, active_member_required
 from models.finance_model import FinanceModel
+from models.payment_model import PaymentModel
+from extensions import sp
+import datetime
 
 finance_bp = Blueprint('finance', __name__)
 
@@ -27,6 +30,48 @@ def api_apply():
     if res:
         return '<div class="alert-success">Pengajuan Pembiayaan Berhasil Dikirim! Mohon tunggu verifikasi.</div>'
     return '<div class="alert-error">Gagal mengirim pengajuan.</div>'
+
+@finance_bp.route('/finance/deposit')
+@active_member_required
+def deposit():
+    now_month = datetime.datetime.now().strftime("%Y-%m")
+    return render_template('finance/deposit.html', now_month=now_month)
+
+@finance_bp.route('/api/finance/deposit', methods=['POST'])
+@active_member_required
+def api_deposit():
+    user_id = session.get('user_id')
+    
+    # Handle Proof Upload
+    proof_url = None
+    if 'payment_proof' in request.files:
+        file = request.files['payment_proof']
+        if file.filename != '':
+            try:
+                ext = file.filename.split('.')[-1]
+                filename = f"payment_{user_id}_{int(datetime.datetime.now().timestamp())}.{ext}"
+                file_content = file.read()
+                
+                sp.db_admin.storage.from_("member-files").upload(
+                    path=filename,
+                    file=file_content,
+                    file_options={"content-type": file.content_type}
+                )
+                proof_url = sp.db_admin.storage.from_("member-files").get_public_url(filename)
+            except Exception as e:
+                print(f"Upload Error: {e}")
+    
+    data = {
+        "payment_type": request.form.get("payment_type"),
+        "amount": request.form.get("amount"),
+        "payment_month": request.form.get("payment_month"),
+        "proof_url": proof_url
+    }
+    
+    res = PaymentModel.create_payment(user_id, data)
+    if res:
+        return '<div class="alert-success">✅ Bukti pembayaran berhasil dikirim! Mohon tunggu verifikasi Admin dalam 1x24 jam.</div>'
+    return '<div class="alert-error">❌ Gagal mengirim bukti pembayaran. Silakan coba lagi.</div>'
 
 @finance_bp.route('/finance')
 @admin_required

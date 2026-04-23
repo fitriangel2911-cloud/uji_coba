@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block page_title %}Setoran & Simpanan{% endblock %}
+
+{% block content %}
+<div class="animate-up" style="max-width: 800px; margin: 0 auto;">
+    <!-- Informasi Tagihan -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+        <div class="glass-card" style="padding: 1.5rem; border-left: 5px solid var(--accent-gold);">
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Simpanan Pokok</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp 2.000.000</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Wajib bagi anggota baru (Sekali bayar).</p>
+        </div>
+        <div class="glass-card" style="padding: 1.5rem; border-left: 5px solid #10b981;">
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Simpanan Wajib</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp 100.000</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Iuran bulanan anggota aktif.</p>
+        </div>
+    </div>
+
+    <div class="glass-card" style="padding: 2.5rem;">
+        <h3 style="margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">Kirim Bukti Setoran</h3>
+        
+        <div id="payment-status">
+            <form hx-post="/api/finance/deposit" hx-target="#payment-status" hx-encoding="multipart/form-data">
+                <div class="form-group">
+                    <label>Jenis Setoran</label>
+                    <select name="payment_type" class="form-control" required>
+                        <option value="pokok">Simpanan Pokok (Rp 2.000.000)</option>
+                        <option value="wajib">Simpanan Wajib (Rp 100.000)</option>
+                        <option value="sukarela">Simpanan Sukarela (Bebas)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nominal Setoran (Rp)</label>
+                    <input type="number" name="amount" class="form-control" required placeholder="Contoh: 2000000">
+                </div>
+
+                <div class="form-group">
+                    <label>Bulan Pembayaran (Untuk Simpanan Wajib)</label>
+                    <input type="month" name="payment_month" class="form-control" value="{{ now_month }}">
+                </div>
+
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label>Upload Bukti Transfer</label>
+                    <div style="border: 2px dashed var(--glass-border); padding: 2rem; border-radius: 12px; text-align: center; position: relative;">
+                        <input type="file" name="payment_proof" required accept="image/*,application/pdf" style="opacity: 0; position: absolute; inset: 0; cursor: pointer; width: 100%;">
+                        <div style="color: var(--text-muted);">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 1rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <p>Klik atau Seret File ke Sini</p>
+                            <p style="font-size: 0.75rem; margin-top: 0.5rem;">JPG, PNG, atau PDF (Maks 2MB)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 12px; margin: 2rem 0; border: 1px solid var(--glass-border);">
+                    <h4 style="color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 0.9rem;">Instruksi Transfer:</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Transfer ke Rekening BSI: <strong>9900 1234 5678</strong><br>
+                        A.n <strong>Koperasi IQ-RA Digital</strong>
+                    </p>
+                </div>
+
+                <button type="submit" class="btn-gold" style="width: 100%; justify-content: center; padding: 1.2rem;">
+                    Kirim Bukti Pembayaran
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -75,11 +75,11 @@ def register():
     
     if request.method == 'POST':
         print("\n" + "="*50)
-        print("🚀 PENDAFTARAN DITERIMA!")
+        print("PENDAFTARAN DITERIMA!")
         email = request.form.get('email')
         role = request.form.get('role', 'member')
-        print(f"📧 Email: {email}")
-        print(f"👤 Role: {role}")
+        print(f"Email: {email}")
+        print(f"Role: {role}")
         print("="*50 + "\n")
         
         password = request.form.get('password')
@@ -90,7 +90,7 @@ def register():
         try:
             res = AuthModel.sign_up(email, password, full_name, phone_number, role, akad)
             if res.user:
-                print(f"✅ Supabase Auth Berhasil: {res.user.id}")
+                print(f"Supabase Auth Berhasil: {res.user.id}")
                 
                 # Jika role adalah demo, login otomatis
                 if role == 'demo':
@@ -111,8 +111,8 @@ def register():
             return '<div class="alert-error">❌ Supabase Auth Gagal: User tidak terbentuk. Silakan coba email lain.</div>'
             
         except Exception as e:
-            print(f"🔥 ERROR FATAL: {str(e)}")
-            return f'<div class="alert-error">🔥 Koneksi Gagal: {str(e)}</div>'
+            print(f"ERROR FATAL: {str(e)}")
+            return f'<div class="alert-error">Koneksi Gagal: {str(e)}</div>'
             
     return render_template('auth/register.html', default_role=default_role)
 

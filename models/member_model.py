@@ -2,7 +2,7 @@ from extensions import sp
 
 class MemberModel:
     @staticmethod
-    def create_member(user_id, data, ktp_url=None):
+    def create_member(user_id, data, ktp_url=None, payment_proof_url=None):
         insert_data = {
             "user_id": user_id,
             "full_name": data.get("full_name"),
@@ -15,6 +15,7 @@ class MemberModel:
             "npwp": data.get("npwp"),
             "phone_number": data.get("phone_number"),
             "ktp_url": ktp_url,
+            "payment_proof_url": payment_proof_url, # New field
             "contract_type": data.get("contract_type"),
             "is_contract_accepted": data.get("is_contract_accepted") in ("on", True),
             "status": "pending"
