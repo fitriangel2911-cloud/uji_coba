@@ -44,20 +44,29 @@
 
                 <div class="form-group" style="margin-top: 2rem;">
                     <label>Upload Bukti Transfer</label>
-                    <div style="border: 2px dashed var(--glass-border); padding: 2rem; border-radius: 12px; text-align: center; position: relative;">
-                        <input type="file" name="payment_proof" required accept="image/*,application/pdf" style="opacity: 0; position: absolute; inset: 0; cursor: pointer; width: 100%;">
-                        <div style="color: var(--text-muted);">
+                    <div style="border: 2px dashed var(--glass-border); padding: 2rem; border-radius: 12px; text-align: center; position: relative; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--accent-gold)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+                        <input type="file" name="payment_proof" id="payment_proof" required accept="image/*,application/pdf" style="opacity: 0; position: absolute; inset: 0; cursor: pointer; width: 100%; height: 100%; z-index: 10;" onchange="document.getElementById('file-name-display').innerHTML = this.files[0] ? '<div style=\'color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); padding: 0.5rem; border-radius: 8px; display: inline-block;\'>✅ File Siap Diupload:<br><strong>' + this.files[0].name + '</strong></div>' : '<span style=\'color: #fca5a5;\'>Belum ada file dipilih</span>'">
+                        <div style="color: var(--text-muted); position: relative; z-index: 1;">
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 1rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            <p>Klik atau Seret File ke Sini</p>
-                            <p style="font-size: 0.75rem; margin-top: 0.5rem;">JPG, PNG, atau PDF (Maks 2MB)</p>
+                            <p style="font-weight: 600; font-size: 1rem;">Klik atau Seret File ke Sini</p>
+                            <p style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.7;">JPG, PNG, atau PDF (Maks 2MB)</p>
+                            
+                            <!-- Area Notifikasi File -->
+                            <div id="file-name-display" style="margin-top: 1.5rem; font-size: 0.9rem; transition: all 0.3s;">
+                                <span style="color: var(--text-muted);">Belum ada file dipilih</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 12px; margin: 2rem 0; border: 1px solid var(--glass-border);">
                     <h4 style="color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 0.9rem;">Instruksi Transfer:</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Transfer ke Rekening BSI: <strong>9900 1234 5678</strong><br>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+                        1. Pastikan Anda menambahkan <strong>Kode Unik Anggota ({{ "{:03d}".format(unique_code) }})</strong> pada nominal transfer untuk mempercepat verifikasi otomatis.<br>
+                        <em>Contoh: Jika nominal <strong>Rp 100.000</strong>, maka total transfer adalah <strong style="color: #10b981;">Rp 100.{{ "{:03d}".format(unique_code) }}</strong></em>
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                        2. Transfer ke Rekening BSI: <strong>9900 1234 5678</strong><br>
                         A.n <strong>Koperasi IQ-RA Digital</strong>
                     </p>
                 </div>

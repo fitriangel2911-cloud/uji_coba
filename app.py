@@ -11,11 +11,13 @@ def create_app():
     from blueprints.dashboard.routes import dashboard_bp
     from blueprints.kyc.routes import kyc_bp
     from blueprints.finance.routes import finance_bp
+    from blueprints.ai.routes import ai_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(kyc_bp)
     app.register_blueprint(finance_bp)
+    app.register_blueprint(ai_bp)
     
     @app.context_processor
     def inject_globals():

@@ -55,13 +55,26 @@ def index():
     if role in ('admin', 'staff', 'cs', 'bendahara', 'manager'):
         # For CS, Bendahara, and Manager, we might want different stats
         # but for now we give them a unified admin base with role-specific components
+        
+        # Ambil setoran online yang perlu diverifikasi
+        pending_payments = PaymentModel.get_pending_payments()
+        for p in pending_payments:
+            if p.get('user_id'):
+                ucode = int(p['user_id'].replace('-', ''), 16) % 1000
+                p['unique_code'] = 123 if ucode == 0 else ucode
+
         stats = {
             "total_members": MemberModel.get_stats(),
             "cash_balance": "Rp 750.000.000",
             "compliance": "98%",
-            "pending_approvals": len(FinanceModel.get_applications_for_approval(role)) if role in ('bendahara', 'manager') else 0
+            "pending_approvals": len(FinanceModel.get_applications_for_approval(role)) if role in ('bendahara', 'manager') else 0,
+            "pending_payments_count": len(pending_payments)
         }
-        return render_template('dashboard/admin.html', stats=stats, user_name=user_name, role=role)
+        return render_template('dashboard/admin.html', 
+                               stats=stats, 
+                               user_name=user_name, 
+                               role=role, 
+                               pending_payments=pending_payments)
     
     # Member or Demo
     financing_apps = FinanceModel.get_applications_for_member(user_name) if role != 'demo' else []
@@ -118,19 +131,6 @@ def catalog():
 @dashboard_bp.route('/api/chatbot/ask', methods=['POST'])
 @login_required
 def api_chatbot_ask():
-    # Placeholder for RAG logic
-    user_message = request.form.get('message', '')
-    query = user_message.lower()
-    
-    if 'syariah' in query:
-        response = "Sistem ekonomi Syariah berlandaskan pada Al-Qur'an dan Hadist, mengedepankan keadilan dan menghindari Riba."
-    elif 'koperasi' in query:
-        response = "Koperasi IQ-RA adalah lembaga keuangan syariah yang dikelola secara profesional untuk kesejahteraan anggota."
-    else:
-        response = "Terima kasih atas pertanyaannya. Saya adalah asisten AI Koperasi IQ-RA yang siap membantu Anda."
-    
-    # Return both user and bot messages
-    return f"""
-        <div class="chat-msg user">{user_message}</div>
-        <div class="chat-msg bot">{response}</div>
-    """
+    # Deprecated in favor of /ai/chat
+    from flask import redirect, url_for
+    return redirect(url_for('ai.chat'), code=307) # Use 307 to preserve POST data

@@ -14,11 +14,27 @@
         {{ app.purpose }}
     </td>
     <td style="padding: 1.25rem 1rem;">
-        <form hx-post="/api/finance/approve" hx-target="#financing-list" style="display: flex; gap: 0.75rem; justify-content: center;">
-            <input type="hidden" name="app_id" value="{{ app.id }}">
-            <button name="status" value="approved" class="btn-gold" style="padding: 0.5rem 1rem; font-size: 0.8rem; flex: 1;">Setujui</button>
-            <button name="status" value="rejected" class="btn-outline-gold" style="padding: 0.5rem 1rem; font-size: 0.8rem; border-color: #ef4444; color: #fca5a5; flex: 1;">Tolak</button>
-        </form>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+                <div style="display: flex; gap: 0.75rem;">
+                    <button name="status" value="approved" class="btn-gold" style="padding: 0.5rem 1rem; font-size: 0.8rem; flex: 1;">Setujui</button>
+                    <button name="status" value="rejected" class="btn-outline-gold" style="padding: 0.5rem 1rem; font-size: 0.8rem; border-color: #ef4444; color: #fca5a5; flex: 1;">Tolak</button>
+                </div>
+                
+                <!-- Auto-loaded AI Recommendation -->
+                <div style="margin-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.75rem;">
+                    <div hx-post="/ai/recommend/inline"
+                         hx-vals='{"amount": "{{ app.amount }}", "purpose": "{{ app.purpose }}", "member": "{{ app.member_name }}"}'
+                         hx-trigger="revealed"
+                         style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 0.75rem; min-height: 50px;">
+                         
+                         <!-- Loading State -->
+                         <div class="htmx-indicator" style="display: flex; align-items: center; gap: 0.5rem; justify-content: center; color: var(--accent); font-size: 0.75rem; width: 100%; height: 100%;">
+                             <span style="width: 12px; height: 12px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></span>
+                             Memuat Analisis AI...
+                         </div>
+                    </div>
+                </div>
+            </div>
     </td>
 </tr>
 {% endfor %}

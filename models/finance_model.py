@@ -55,7 +55,8 @@ class FinanceModel:
         """
         Mengambil riwayat transaksi kasir.
         """
-        builder = sp.db_admin.table("cashier_transactions").select("*, members(full_name)")
+        # Re-enable join now that FK is added
+        builder = sp.db_admin.table("cashier_transactions").select("*, profiles!member_id(full_name)")
         if user_id:
             builder = builder.eq("recorded_by", user_id)
         return builder.order("created_at", desc=True).execute().data

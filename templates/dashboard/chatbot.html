@@ -3,8 +3,8 @@
 {% block page_title %}AI Syariah Assistant{% endblock %}
 
 {% block content %}
-<div class="animate-up" style="max-width: 800px; margin: 0 auto; height: calc(100vh - 200px); display: flex; flex-direction: column;">
-    <div class="glass-card" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+<div class="animate-up" style="max-width: 1000px; width: 100%; margin: 0 auto; height: calc(100vh - 120px); display: flex; flex-direction: column;">
+    <div class="glass-card" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
         <!-- Header -->
         <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border); background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 1rem;">
             <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🤖</div>
@@ -26,8 +26,20 @@
 
         <!-- Input Area -->
         <div style="padding: 1.5rem; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.2);">
-            <form hx-post="/api/chatbot/ask" hx-target="#chat-window" hx-swap="beforeend" hx-on::after-request="this.reset(); document.getElementById('chat-window').scrollTo(0, document.getElementById('chat-window').scrollHeight)" style="display: flex; gap: 1rem;">
-                <input type="text" name="message" class="form-control" placeholder="Tanyakan sesuatu..." required style="border-radius: 12px; background: rgba(255,255,255,0.05);">
+            <form hx-post="/ai/chat" 
+                  hx-target="#chat-window" 
+                  hx-swap="beforeend" 
+                  hx-indicator="#chat-loading"
+                  hx-on::after-request="this.reset(); document.getElementById('chat-window').scrollTo({top: document.getElementById('chat-window').scrollHeight, behavior: 'smooth'})" 
+                  style="display: flex; gap: 1rem; position: relative;">
+                
+                <!-- Loading Indicator -->
+                <div id="chat-loading" class="htmx-indicator" style="position: absolute; top: -40px; left: 50%; transform: translateX(-50%); background: var(--glass); padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid var(--glass-border); font-size: 0.8rem; color: var(--accent); display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="spinner" style="width: 12px; height: 12px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></span>
+                    AI sedang berpikir...
+                </div>
+
+                <input type="text" name="message" class="form-control" placeholder="Tanyakan sesuatu tentang akad syariah..." required style="border-radius: 12px; background: rgba(255,255,255,0.05); flex: 1;">
                 <button type="submit" class="btn-gold" style="padding: 0 1.5rem;">
                     Kirim
                 </button>
@@ -39,25 +51,41 @@
 <style>
     .chat-msg.user {
         align-self: flex-end;
-        max-width: 80%;
+        max-width: 90%;
         padding: 1rem 1.25rem;
         border-radius: 16px 16px 0 16px;
         background: var(--accent);
         color: #fff;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         line-height: 1.6;
         box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
     }
     
     .chat-msg.bot {
         align-self: flex-start;
-        max-width: 80%;
+        max-width: 90%;
         padding: 1rem 1.25rem;
         border-radius: 0 16px 16px 16px;
         background: rgba(255,255,255,0.05);
         border: 1px solid var(--glass-border);
         font-size: 0.9rem;
         line-height: 1.6;
+    }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .htmx-indicator {
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+        pointer-events: none;
+    }
+    .htmx-request .htmx-indicator {
+        opacity: 1;
+    }
+    .htmx-request.htmx-indicator {
+        opacity: 1;
     }
 </style>
 {% endblock %}

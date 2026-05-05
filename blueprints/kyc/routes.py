@@ -14,12 +14,27 @@ def index():
     
     if role in ('admin', 'staff', 'cs', 'bendahara', 'manager'):
         query = request.args.get('q')
-        members = MemberModel.get_all_members(query)
+        
+        # Ambil calon anggota (pending)
+        pending_members = MemberModel.get_all_members(query, roles=["member"])
+        # Ambil anggota aktif
+        active_members = MemberModel.get_all_members(query, roles=["member_active"])
+        
+        # Inject unique code to both lists
+        for m in pending_members + active_members:
+            if m.get('id'):
+                ucode = int(m['id'].replace('-', ''), 16) % 1000
+                m['unique_code'] = 123 if ucode == 0 else ucode
         
         if request.headers.get('HX-Request'):
-            return render_template('components/member_rows.html', members=members)
+            # Return partial if requested (for search) - we'll update admin_index_content accordingly
+            return render_template('kyc/admin_index_content.html', 
+                                   pending_members=pending_members, 
+                                   active_members=active_members)
             
-        return render_template('kyc/admin_index.html', members=members)
+        return render_template('kyc/admin_index.html', 
+                               pending_members=pending_members, 
+                               active_members=active_members)
     
     # Member view
     member = MemberModel.get_member_by_user_id(user_id)

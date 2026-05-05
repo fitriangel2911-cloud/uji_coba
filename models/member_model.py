@@ -28,9 +28,13 @@ class MemberModel:
         return res.data[0] if res.data else None
 
     @staticmethod
-    def get_all_members(query=None):
+    def get_all_members(query=None, roles=None):
+        # Default to 'member' if roles not specified
+        if roles is None:
+            roles = ["member"]
+            
         # Mengambil dari tabel profiles untuk melihat semua pendaftar awal
-        builder = sp.db_admin.table("profiles").select("*").eq("role", "member")
+        builder = sp.db_admin.table("profiles").select("*").in_("role", roles)
         if query:
             builder = builder.or_(f"full_name.ilike.%{query}%,email.ilike.%{query}%")
         

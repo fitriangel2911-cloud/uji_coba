@@ -34,8 +34,14 @@ def api_apply():
 @finance_bp.route('/finance/deposit')
 @active_member_required
 def deposit():
+    user_id = session.get('user_id')
     now_month = datetime.datetime.now().strftime("%Y-%m")
-    return render_template('finance/deposit.html', now_month=now_month)
+    
+    # Generate 3-digit unique code based on UUID
+    unique_code = int(user_id.replace('-', ''), 16) % 1000
+    if unique_code == 0: unique_code = 123
+        
+    return render_template('finance/deposit.html', now_month=now_month, unique_code=unique_code)
 
 @finance_bp.route('/api/finance/deposit', methods=['POST'])
 @active_member_required
@@ -68,10 +74,10 @@ def api_deposit():
         "proof_url": proof_url
     }
     
-    res = PaymentModel.create_payment(user_id, data)
-    if res:
-        return '<div class="alert-success">✅ Bukti pembayaran berhasil dikirim! Mohon tunggu verifikasi Admin dalam 1x24 jam.</div>'
-    return '<div class="alert-error">❌ Gagal mengirim bukti pembayaran. Silakan coba lagi.</div>'
+    success, err_msg = PaymentModel.create_payment(user_id, data)
+    if success:
+        return '<div class="alert-success" style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 1rem; border-radius: 8px;">✅ Bukti pembayaran berhasil dikirim! Mohon tunggu verifikasi Admin.</div>'
+    return f'<div class="alert-error" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #fca5a5; padding: 1rem; border-radius: 8px;">❌ Gagal mengirim bukti pembayaran.<br><small>{err_msg}</small></div>'
 
 @finance_bp.route('/finance')
 @admin_required
@@ -82,10 +88,18 @@ def index():
 @finance_bp.route('/finance/kasir')
 @admin_required
 def kasir():
-    # Interface for CS to record deposits
+    # Interface for CS to record deposits & verify online payments
     user_id = session.get('user_id')
     history = FinanceModel.get_cashier_transactions(user_id)
-    return render_template('finance/kasir.html', history=history)
+    pending_payments = PaymentModel.get_pending_payments()
+    
+    # Menambahkan unique code ke data pending agar CS bisa melihatnya
+    for p in pending_payments:
+        if p.get('user_id'):
+            ucode = int(p['user_id'].replace('-', ''), 16) % 1000
+            p['unique_code'] = 123 if ucode == 0 else ucode
+            
+    return render_template('finance/kasir.html', history=history, pending_payments=pending_payments)
 
 @finance_bp.route('/finance/financing')
 @admin_required
@@ -116,6 +130,15 @@ def api_kasir():
     if res:
         return '<div class="alert-success">Setoran berhasil dicatat!</div>'
     return '<div class="alert-error">Gagal mencatat setoran.</div>'
+
+@finance_bp.route('/api/finance/verify_payment', methods=['POST'])
+@admin_required
+def api_verify_payment():
+    payment_id = request.form.get("payment_id")
+    res = PaymentModel.approve_payment(payment_id)
+    if res:
+        return '<span style="color: #10b981; font-weight: 700; font-size: 0.8rem;">✅ Terverifikasi</span>'
+    return '<span style="color: #ef4444; font-weight: 700; font-size: 0.8rem;">❌ Gagal</span>'
 
 @finance_bp.route('/api/finance/recommend', methods=['POST'])
 @admin_required

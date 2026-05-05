@@ -1,0 +1,64 @@
+<!-- Table 1: Calon Anggota (Pending) -->
+<div class="glass-card" style="padding: 0; overflow: hidden; margin-bottom: 2.5rem; border-top: 4px solid var(--accent-gold);">
+    <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02);">
+        <h3 style="margin: 0; font-size: 1.2rem;">📋 Calon Anggota (Perlu Verifikasi)</h3>
+        <span style="background: rgba(251, 191, 36, 0.1); color: var(--accent-gold); padding: 0.2rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">
+            {{ pending_members|length }} Menunggu
+        </span>
+    </div>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; text-transform: uppercase;">
+                    <th style="padding: 1.25rem 1rem;">Nama & Kode</th>
+                    <th style="padding: 1.25rem 1rem;">Kontak</th>
+                    <th style="padding: 1.25rem 1rem;">Status</th>
+                    <th style="padding: 1.25rem 1rem;">Rekomendasi RAG</th>
+                    <th style="padding: 1.25rem 1rem; text-align: right;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in pending_members %}
+                    {% include "components/member_rows.html" %}
+                {% endfor %}
+                {% if not pending_members %}
+                <tr>
+                    <td colspan="5" style="padding: 3rem; text-align: center; color: var(--text-muted);">Tidak ada calon anggota baru.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Table 2: Daftar Anggota Aktif -->
+<div class="glass-card" style="padding: 0; overflow: hidden; border-top: 4px solid var(--accent);">
+    <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02);">
+        <h3 style="margin: 0; font-size: 1.2rem;">✅ Daftar Anggota Aktif</h3>
+        <span style="background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 0.2rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">
+            {{ active_members|length }} Anggota
+        </span>
+    </div>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; text-transform: uppercase;">
+                    <th style="padding: 1.25rem 1rem;">Nama & Kode</th>
+                    <th style="padding: 1.25rem 1rem;">Kontak</th>
+                    <th style="padding: 1.25rem 1rem;">Status</th>
+                    <th style="padding: 1.25rem 1rem; text-align: right;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in active_members %}
+                    {% include "components/member_rows.html" %}
+                {% endfor %}
+                {% if not active_members %}
+                <tr>
+                    <td colspan="4" style="padding: 3rem; text-align: center; color: var(--text-muted);">Belum ada anggota aktif.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

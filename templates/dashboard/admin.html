@@ -18,9 +18,64 @@
         <div style="font-size: 2.2rem; font-weight: 800; color: #f59e0b;">{{ stats.pending_approvals }}</div>
     </div>
     {% endif %}
+    <div class="glass-card" style="padding: 1.8rem; border-left: 4px solid var(--accent);">
+        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Setoran Pending</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: var(--accent);">{{ stats.pending_payments_count }}</div>
+    </div>
 </div>
 
-<div class="glass-card animate-up" style="padding: 2.5rem; position: relative; overflow: hidden;">
+<div style="display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem; align-items: start;">
+    <div class="animate-up">
+        <!-- Panel Verifikasi Setoran Online -->
+        <div class="glass-card" style="padding: 0; overflow: hidden; margin-bottom: 2rem;">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02);">
+                <h3 style="margin: 0; font-size: 1.1rem;">💰 Verifikasi Setoran Online</h3>
+                <a href="/finance/kasir" style="font-size: 0.75rem; color: var(--accent-gold); text-decoration: none;">Kelola Semua →</a>
+            </div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                    <thead style="background: rgba(255,255,255,0.02); color: var(--text-muted);">
+                        <tr style="text-align: left; border-bottom: 1px solid var(--glass-border);">
+                            <th style="padding: 1rem;">Anggota</th>
+                            <th style="padding: 1rem;">Nominal + Kode</th>
+                            <th style="padding: 1rem; text-align: center;">Bukti</th>
+                            <th style="padding: 1rem; text-align: right;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pending_payments[:5] %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);" id="dash-payment-{{ p.id }}">
+                            <td style="padding: 1rem;">
+                                <div style="font-weight: 600; color: #fff;">{{ p.members.full_name if p.members else 'Unknown' }}</div>
+                                <div style="font-size: 0.7rem; color: var(--accent-gold);">Kode: {{ "{:03d}".format(p.unique_code) }}</div>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="font-weight: 700; color: #10b981;">Rp {{ "{:,.0f}".format(p.amount) }}<span style="color: var(--accent-gold);">.{{ "{:03d}".format(p.unique_code) }}</span></div>
+                                <div style="font-size: 0.65rem; color: var(--text-muted);">{{ p.payment_type.upper() }}</div>
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <a href="{{ p.proof_url }}" target="_blank" class="btn-outline-gold" style="padding: 0.3rem 0.6rem; font-size: 0.7rem;">Resi</a>
+                            </td>
+                            <td style="padding: 1rem; text-align: right;" id="dash-status-{{ p.id }}">
+                                <form hx-post="/api/finance/verify_payment" hx-target="#dash-status-{{ p.id }}" style="margin: 0;">
+                                    <input type="hidden" name="payment_id" value="{{ p.id }}">
+                                    <button type="submit" class="btn-gold" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">Verifikasi</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not pending_payments %}
+                        <tr>
+                            <td colspan="4" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">Antrian setoran bersih.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card animate-up" style="padding: 1.8rem; position: relative; overflow: hidden;">
     <div style="position: absolute; top: 0; right: 0; padding: 1rem; font-size: 0.7rem; font-weight: 900; color: var(--accent-gold); opacity: 0.2; text-transform: uppercase;">Akses: {{ role }}</div>
     <h3 style="margin-bottom: 2rem; font-size: 1.4rem;">Menu Operasional {{ role.upper() }}</h3>
     

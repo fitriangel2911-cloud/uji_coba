@@ -1,0 +1,34 @@
+# Pedoman Operasional Koperasi Syariah IQ-RA
+
+## 1. Akad Murabahah (Jual Beli)
+Murabahah adalah akad jual beli barang dengan menegaskan harga perolehan dan margin keuntungan kepada pembeli.
+- Karakteristik: Koperasi membeli barang yang dibutuhkan anggota, lalu menjualnya kepada anggota dengan harga yang sudah ditambah margin.
+- Pembayaran: Dapat dilakukan secara cicilan (bi-tsaman ajil).
+- Syarat: Barang harus halal, harga perolehan dan margin harus transparan.
+
+## 2. Akad Mudharabah (Bagi Hasil)
+Mudharabah adalah akad kerja sama usaha antara pemilik dana (shahibul maal) dan pengelola (mudharib).
+- Pembagian Keuntungan: Keuntungan dibagi berdasarkan nisbah yang disepakati di awal.
+- Kerugian: Kerugian finansial ditanggung pemilik dana, kecuali jika disebabkan oleh kelalaian pengelola.
+- Aplikasi: Produk simpanan berjangka atau investasi usaha.
+
+## 3. Akad Musyarakah (Kemitraan)
+Musyarakah adalah akad kerja sama antara dua pihak atau lebih untuk suatu usaha tertentu, di mana masing-masing pihak memberikan kontribusi dana.
+- Pembagian Keuntungan: Berdasarkan nisbah yang disepakati.
+- Kerugian: Berdasarkan porsi modal masing-masing.
+- Aplikasi: Pembiayaan proyek atau pengadaan aset bersama.
+
+## 4. Akad Wadi'ah (Titipan)
+Wadi'ah adalah akad titipan murni dari satu pihak ke pihak lain yang harus dijaga dan dikembalikan kapan saja pemilik menghendaki.
+- Jenis: Wadi'ah Yad ad-Dhamanah (koperasi boleh menggunakan dana dan menjamin pengembaliannya) dan Wadi'ah Yad al-Amanah (titipan murni tanpa penggunaan dana).
+- Aplikasi: Tabungan sukarela.
+
+## 5. Akad Ijarah (Sewa)
+Ijarah adalah akad pemindahan hak guna (manfaat) atas suatu barang atau jasa dalam waktu tertentu melalui pembayaran sewa (ujrah), tanpa diikuti dengan pemindahan kepemilikan barang itu sendiri.
+- Aplikasi: Sewa ruko, kendaraan, atau jasa pendidikan.
+
+## 6. Etika Bisnis Syariah
+- Larangan Riba: Menghindari segala bentuk tambahan yang disyaratkan dalam transaksi pinjam-meminjam (bunga).
+- Larangan Gharar: Menghindari ketidakpastian yang berlebihan dalam akad.
+- Larangan Maysir: Menghindari segala bentuk perjudian atau spekulasi.
+- Keadilan: Transaksi harus saling menguntungkan (antaradin).
