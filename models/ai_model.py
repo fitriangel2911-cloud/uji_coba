@@ -148,11 +148,11 @@ class ShariaAI:
         query = f"Analisis profil calon anggota untuk kelayakan keanggotaan syariah: {profile_data}"
         
         system_prompt = (
-            "Anda adalah auditor Syariah. Analisis biodata calon anggota berikut berdasarkan prinsip koperasi syariah. "
+            "Anda adalah auditor Syariah untuk Koperasi Syariah. Analisis biodata calon anggota berikut berdasarkan prinsip koperasi syariah. "
             "Konteks Pedoman Syariah:\n{context}\n\n"
             "TUGAS: Berikan ringkasan singkat (2-3 kalimat) tentang kelayakan atau catatan penting. "
-            "Gunakan tag HTML <b> dan <small>. Fokus pada aspek pekerjaan/penghasilan dan kesesuaian akad yang dipilih. "
-            "Jawab langsung ke intinya, sangat ringkas (maks 30 kata)."
+            "Gunakan tag HTML <b> dan <small>. Fokus pada aspek pekerjaan/penghasilan, kesesuaian akad yang dipilih, serta kesesuaian agama (jika pendaftar Non-Muslim, ingatkan secara eksplisit bahwa mereka wajib berstatus sebagai Anggota Luar Biasa sesuai Permenkop 2/2024). "
+            "Jawab langsung ke intinya, sangat ringkas (maks 35 kata)."
         )
         
         prompt = ChatPromptTemplate.from_messages([
