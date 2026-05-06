@@ -19,19 +19,12 @@
     
     {% if m.role == 'member' %}
     <td style="padding: 1.25rem 1rem;">
-        <div id="ai-rec-{{ m.id }}">
-            <button class="btn-outline-gold" style="padding: 0.4rem 0.8rem; font-size: 0.7rem; border-style: dashed;"
-                    hx-post="/ai/analyze-member"
-                    hx-vals='{"user_id": "{{ m.id }}"}'
-                    hx-target="#ai-rec-{{ m.id }}"
-                    hx-indicator="#loading-ai-{{ m.id }}">
-                ✨ Analisis Sharia AI
-            </button>
-            <div id="loading-ai-{{ m.id }}" class="htmx-indicator" style="font-size: 0.7rem; color: var(--accent-gold); margin-top: 0.4rem;">
-                <span class="spinner-inline" style="display: inline-block; width: 10px; height: 10px; border: 2px solid var(--accent-gold); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></span>
-                Menganalisis...
-            </div>
-        </div>
+        <button class="btn-outline-gold" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;"
+                hx-get="/api/kyc/member/{{ m.id }}"
+                hx-target="#modal-container"
+                hx-swap="innerHTML">
+            📄 Lihat Formulir
+        </button>
     </td>
     {% endif %}
 

@@ -2,8 +2,8 @@ import os
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
     from langchain_community.vectorstores import SupabaseVectorStore
-    from langchain.chains import create_retrieval_chain, create_history_aware_retriever
-    from langchain.chains.combine_documents import create_stuff_documents_chain
+    from langchain_classic.chains import create_retrieval_chain, create_history_aware_retriever
+    from langchain_classic.chains.combine_documents import create_stuff_documents_chain
     from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 except ImportError as e:
     print(f"\n❌ ERROR: Library pendukung AI tidak lengkap! ({str(e)})")

@@ -118,6 +118,14 @@ def submit():
     
     return '<div class="alert-error">Gagal mengirim data. Coba lagi.</div>'
 
+@kyc_bp.route('/api/kyc/member/<user_id>', methods=['GET'])
+@admin_required
+def member_details(user_id):
+    member = MemberModel.get_member_by_user_id(user_id)
+    if not member:
+        return "<div class='alert-error'>Data tidak ditemukan</div>"
+    return render_template('components/member_details_modal.html', member=member)
+
 @kyc_bp.route('/api/kyc/verify', methods=['POST'])
 @admin_required
 def verify():
