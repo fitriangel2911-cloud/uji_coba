@@ -19,13 +19,26 @@ class PaymentModel:
     def get_pending_payments():
         """Mengambil semua pembayaran online yang pending (Untuk diverifikasi CS)"""
         try:
-            # We also need member info. Supabase allows nested select if foreign keys are set.
-            response = sp.db_admin.table('member_payments')\
-                .select('*, members(full_name, user_id)')\
+            # Ambil semua data pembayaran pending
+            payments_res = sp.db_admin.table('member_payments')\
+                .select('*')\
                 .eq('status', 'pending')\
                 .order('created_at', desc=True)\
                 .execute()
-            return response.data
+            payments = payments_res.data if payments_res.data else []
+            
+            if payments:
+                # Ambil semua data profiles untuk mapping nama lengkap anggota
+                profiles_res = sp.db_admin.table('profiles').select('id, full_name').execute()
+                profiles_map = {p['id']: p['full_name'] for p in profiles_res.data} if profiles_res.data else {}
+                
+                # Petakan ke dalam dictionary 'members' agar template HTML tidak pecah
+                for p in payments:
+                    user_id = p.get('user_id')
+                    full_name = profiles_map.get(user_id, 'Unknown')
+                    p['members'] = {'full_name': full_name, 'user_id': user_id}
+            
+            return payments
         except Exception as e:
             print(f"Error fetching pending payments: {e}")
             return []
