@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, session, redirect, url_fo
 from decorators import login_required, admin_required
 from models.member_model import MemberModel
 from extensions import sp
+from models.saran_model import SaranModel
 import datetime
 
 kyc_bp = Blueprint('kyc', __name__)
@@ -12,7 +13,7 @@ def index():
     user_id = session.get('user_id')
     role = session.get('role')
     
-    if role in ('admin', 'staff', 'cs', 'bendahara', 'manager'):
+    if role in ('admin', 'staff', 'cs', 'bendahara', 'manager', 'dps'):
         query = request.args.get('q')
         
         # Ambil calon anggota (pending)
@@ -30,11 +31,13 @@ def index():
             # Return partial if requested (for search) - we'll update admin_index_content accordingly
             return render_template('kyc/admin_index_content.html', 
                                    pending_members=pending_members, 
-                                   active_members=active_members)
+                                   active_members=active_members,
+                                   role=role)
             
         return render_template('kyc/admin_index.html', 
                                pending_members=pending_members, 
-                               active_members=active_members)
+                               active_members=active_members,
+                               role=role)
     
     # Member view
     member = MemberModel.get_member_by_user_id(user_id)
@@ -51,31 +54,45 @@ def index():
 def submit():
     user_id = session.get('user_id')
     
-    # Handle File Upload
+    # Handle File Uploads (KTP and Payment Proof)
+    ktp_url = None
     payment_proof_url = None
-    if 'payment_proof' in request.files:
-        file = request.files['payment_proof']
+    
+    # 1. Handle KTP/Paspor Upload
+    if 'ktp_file' in request.files:
+        file = request.files['ktp_file']
         if file.filename != '':
             try:
-                # Generate unique filename
                 ext = file.filename.split('.')[-1]
-                filename = f"proof_{user_id}_{int(datetime.datetime.now().timestamp())}.{ext}"
+                filename = f"ktp_{user_id}_{int(datetime.datetime.now().timestamp())}.{ext}"
                 file_content = file.read()
                 
-                # Upload to Supabase Storage (Bucket: member-files)
-                # Note: Bucket must be public or handled via policy
                 sp.db_admin.storage.from_("member-files").upload(
                     path=filename,
                     file=file_content,
                     file_options={"content-type": file.content_type}
                 )
+                ktp_url = sp.db_admin.storage.from_("member-files").get_public_url(filename)
+            except Exception as e:
+                print(f"KTP Upload Error: {e}")
                 
-                # Get Public URL
-                res_url = sp.db_admin.storage.from_("member-files").get_public_url(filename)
-                payment_proof_url = res_url
+    # 2. Handle Payment Proof Upload (Optional in KYC)
+    if 'payment_proof' in request.files:
+        file = request.files['payment_proof']
+        if file.filename != '':
+            try:
+                ext = file.filename.split('.')[-1]
+                filename = f"proof_{user_id}_{int(datetime.datetime.now().timestamp())}.{ext}"
+                file_content = file.read()
+                
+                sp.db_admin.storage.from_("member-files").upload(
+                    path=filename,
+                    file=file_content,
+                    file_options={"content-type": file.content_type}
+                )
+                payment_proof_url = sp.db_admin.storage.from_("member-files").get_public_url(filename)
             except Exception as e:
                 print(f"Upload Error: {e}")
-                # Fallback: continue without URL if upload fails (or return error)
     
     data = {
         "full_name": request.form.get("full_name"),
@@ -91,10 +108,14 @@ def submit():
         "is_contract_accepted": request.form.get("is_contract_accepted")
     }
     
-    res = MemberModel.create_member(user_id, data, payment_proof_url=payment_proof_url)
+    try:
+        res = MemberModel.create_member(user_id, data, ktp_url=ktp_url, payment_proof_url=payment_proof_url)
+        if res:
+            return '<div class="alert-success">Data KYC & Bukti Identitas berhasil dikirim! Menunggu verifikasi.</div>'
+    except Exception as e:
+        print(f"Error submitting KYC: {e}")
+        return f'<div class="alert-error">Gagal mengirim data: {str(e)}</div>'
     
-    if res:
-        return '<div class="alert-success">Data KYC & Bukti Transfer berhasil dikirim! Menunggu verifikasi.</div>'
     return '<div class="alert-error">Gagal mengirim data. Coba lagi.</div>'
 
 @kyc_bp.route('/api/kyc/verify', methods=['POST'])
@@ -106,3 +127,27 @@ def verify():
     
     members = MemberModel.get_all_members()
     return render_template('components/member_rows.html', members=members)
+
+@kyc_bp.route('/api/kyc/saran', methods=['POST'])
+@admin_required
+def submit_saran():
+    member_id = request.form.get("member_id")
+    saran_text = request.form.get("saran_text")
+    dps_name = session.get("user_name", "DPS")
+    
+    if saran_text and member_id:
+        SaranModel.add_saran(member_id, saran_text, dps_name)
+        return '<div class="alert-success" style="font-size: 0.8rem; padding: 0.5rem; margin-top: 0.5rem;">Saran terkirim!</div>'
+    return '<div class="alert-error" style="font-size: 0.8rem; padding: 0.5rem; margin-top: 0.5rem;">Gagal mengirim saran.</div>'
+
+@kyc_bp.route('/api/kyc/saran/popup')
+@admin_required
+def saran_popup():
+    role = session.get('role')
+    # DPS doesn't need to see the popup for their own saran, maybe? or they can.
+    # We will show it to admins.
+    if role in ('admin', 'staff', 'cs', 'bendahara', 'manager'):
+        sarans = SaranModel.get_all_saran()
+        if sarans:
+            return render_template('components/saran_popup.html', sarans=sarans)
+    return ''

@@ -32,41 +32,9 @@ def login():
             
     return render_template('auth/login.html')
 
-@auth_bp.route('/login-demo', methods=['GET', 'POST'])
+@auth_bp.route('/login-demo')
 def login_demo():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        try:
-            # 1. Sign in
-            res = AuthModel.sign_in(email, password)
-            user_id = res.user.id
-            
-            # 2. Check Role
-            profile = AuthModel.get_profile(user_id)
-            if profile.get('role') != 'demo':
-                return '<div class="alert-error">Error: Akun ini bukan akun demo.</div>'
-            
-            # 3. Check Demo Limit (Maks 2)
-            is_allowed, count = AuthModel.check_demo_limit(email)
-            if not is_allowed:
-                return f'<div class="alert-error">Batas Demo: Akun ini sudah login {count} kali. Batas maksimal adalah 2.</div>'
-            
-            # 4. Increment Count & Login
-            AuthModel.increment_demo_count(email)
-            session['user_id'] = user_id
-            session['role'] = 'demo'
-            session['user_name'] = profile.get('full_name', 'User Demo')
-            
-            return '<script>window.location.href = "/dashboard";</script>'
-        except Exception as e:
-            error_msg = str(e)
-            if "Invalid login credentials" in error_msg:
-                error_msg = "Email atau password demo salah."
-            return f'<div class="alert-error">Login Demo Gagal: {error_msg}</div>'
-            
-    return render_template('auth/login_demo.html')
+    return redirect(url_for('auth.login'))
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -100,7 +68,7 @@ def register():
                     return '<script>window.location.href = "/dashboard";</script>'
 
                 # Jika email belum dikonfirmasi (untuk akun real)
-                if res.user.identities and len(res.user.identities) > 0:
+                if not getattr(res.user, 'email_confirmed_at', None):
                     return f'<script>window.location.href = "{url_for("auth.verification_pending", email=email)}";</script>'
                 else:
                     session['user_id'] = res.user.id

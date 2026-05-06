@@ -72,10 +72,22 @@ class PaymentModel:
                 if p['status'].lower() == 'lunas':
                     amount = float(p['amount'])
                     if p['payment_type'].lower() == 'pokok':
-                        summary['pokok'] += amount
+                        # Kurangi biaya administrasi Rp 5.000 & Infak Rp 10.000 dari total bayar Rp 2.015.000
+                        saving_part = amount - 15000.0 if amount >= 15000.0 else amount
+                        summary['pokok'] += saving_part
+                        summary['total_aset'] += saving_part
                     elif p['payment_type'].lower() == 'wajib':
-                        summary['wajib'] += amount
-                    summary['total_aset'] += amount
+                        # Kurangi biaya administrasi Rp 5.000 & Infak Rp 10.000 dari iuran wajib bulanan Rp 115.000
+                        saving_part = amount - 15000.0 if amount >= 15000.0 else amount
+                        summary['wajib'] += saving_part
+                        summary['total_aset'] += saving_part
+                    elif p['payment_type'].lower() == 'gabungan':
+                        # Gabungan Pokok (Rp 2jt) + Wajib (Rp 100rb) + Adm (Rp 5rb) + Infak (Rp 10rb) = Rp 2.115.000
+                        summary['pokok'] += 2000000.0
+                        summary['wajib'] += 100000.0
+                        summary['total_aset'] += 2100000.0
+                    else:
+                        summary['total_aset'] += amount
             
             return summary
         except Exception as e:

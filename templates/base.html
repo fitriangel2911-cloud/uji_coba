@@ -159,5 +159,8 @@
             </div>
         </div>
     </div>
+    {% if session.get('role') in ['admin', 'staff', 'cs', 'bendahara', 'manager'] %}
+    <div hx-get="/api/kyc/saran/popup" hx-trigger="load, every 10s" hx-swap="innerHTML"></div>
+    {% endif %}
 </body>
 </html>

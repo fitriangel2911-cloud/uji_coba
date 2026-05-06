@@ -52,8 +52,8 @@ def index():
     profile = AuthModel.get_profile(user_id)
     user_name = profile.get('full_name', 'User') if profile else 'User'
     
-    if role in ('admin', 'staff', 'cs', 'bendahara', 'manager'):
-        # For CS, Bendahara, and Manager, we might want different stats
+    if role in ('admin', 'staff', 'cs', 'bendahara', 'manager', 'dps'):
+        # For CS, Bendahara, Manager, and DPS, we might want different stats
         # but for now we give them a unified admin base with role-specific components
         
         # Ambil setoran online yang perlu diverifikasi
@@ -86,9 +86,13 @@ def index():
     # Check if needs initial payment (Pokok)
     needs_initial_payment = (role == 'member_active' and savings['pokok'] == 0)
     
+    # Fetch member KYC details to check if they completed KYC
+    member = MemberModel.get_member_by_user_id(user_id)
+    
     return render_template('dashboard/member.html', 
                            user_name=user_name, 
                            profile=profile, 
+                           member=member,
                            financing_apps=financing_apps,
                            payments=payments,
                            savings=savings,

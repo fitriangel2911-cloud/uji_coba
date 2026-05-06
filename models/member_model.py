@@ -20,11 +20,11 @@ class MemberModel:
             "is_contract_accepted": data.get("is_contract_accepted") in ("on", True),
             "status": "pending"
         }
-        return sp.db.table("members").insert(insert_data).execute()
+        return sp.db_admin.table("members").insert(insert_data).execute()
 
     @staticmethod
     def get_member_by_user_id(user_id):
-        res = sp.db.table("members").select("*").eq("user_id", user_id).execute()
+        res = sp.db_admin.table("members").select("*").eq("user_id", user_id).execute()
         return res.data[0] if res.data else None
 
     @staticmethod

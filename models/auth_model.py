@@ -31,8 +31,7 @@ class AuthModel:
 
     @staticmethod
     def upsert_profile(user_id, full_name, email, phone_number, password, role, akad=None):
-        table_name = "demo_profiles" if role == "demo" else "profiles"
-        return sp.db_admin.table(table_name).upsert({
+        return sp.db_admin.table("profiles").upsert({
             "id": user_id,
             "full_name": full_name,
             "email": email,
@@ -44,14 +43,13 @@ class AuthModel:
 
     @staticmethod
     def get_profile(user_id):
-        # Check profiles first (members, admin, staff)
-        res = sp.db_admin.table("profiles").select("*").eq("id", user_id).execute()
-        if res.data:
-            return res.data[0]
-        
-        # Then check demo_profiles
-        res = sp.db_admin.table("demo_profiles").select("*").eq("id", user_id).execute()
-        return res.data[0] if res.data else None
+        try:
+            res = sp.db_admin.table("profiles").select("*").eq("id", user_id).execute()
+            if res.data:
+                return res.data[0]
+        except Exception as e:
+            print(f"Error fetching profile: {e}")
+        return None
 
     @staticmethod
     def check_demo_limit(email):

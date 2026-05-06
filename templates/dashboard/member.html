@@ -18,7 +18,7 @@
         <div style="flex: 1;">
             <h4 style="color: var(--accent-gold); margin-bottom: 0.25rem;">Aktivasi Simpanan Pokok Diperlukan</h4>
             <p style="font-size: 0.9rem; color: var(--text-main);">
-                Keanggotaan Anda telah aktif! Segera lakukan setoran **Simpanan Pokok (Rp 2.000.000)** untuk memvalidasi hak keanggotaan penuh Anda.
+                Keanggotaan Anda telah aktif! Segera lakukan setoran **Simpanan Pokok, Adm & Infak (Rp 2.015.000)** untuk memvalidasi hak keanggotaan penuh Anda.
             </p>
         </div>
         <a href="/finance/deposit" class="btn-gold" style="padding: 0.75rem 1.5rem; font-size: 0.85rem;">Bayar Sekarang</a>
@@ -77,6 +77,9 @@
                     {% elif role == 'member_rejected' %}
                         <div style="font-size: 1.5rem; font-weight: 900; color: #ef4444; text-transform: uppercase;">DITOLAK</div>
                         <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Pendaftaran Anda belum dapat kami proses.</div>
+                    {% elif not member %}
+                        <div style="font-size: 1.25rem; font-weight: 900; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em;">BELUM MENJADI ANGGOTA</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Anda belum mengajukan permohonan keanggotaan.</div>
                     {% else %}
                         <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent-gold); text-transform: uppercase;">MENUNGGU</div>
                         <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Sedang diverifikasi oleh Customer Service.</div>
@@ -85,7 +88,7 @@
                 
                 {% if role == 'member' %}
                 <div style="margin-top: 1.5rem; text-align: center;">
-                    <a href="/kyc" class="btn-outline-gold" style="width: 100%; border-color: rgba(251, 191, 36, 0.3); padding: 0.75rem; font-size: 0.9rem;">Lengkapi Data KYC</a>
+                    <a href="/kyc" class="btn-gold" style="width: 100%; padding: 1rem; font-size: 1rem; text-decoration: none;">Lengkapi Data KYC</a>
                 </div>
                 {% endif %}
             </div>

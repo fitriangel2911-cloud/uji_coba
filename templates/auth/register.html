@@ -25,13 +25,7 @@
             <input type="password" name="password" class="form-control" required placeholder="Min 6 karakter">
         </div>
         <input type="hidden" name="akad" value="Musyarakah">
-        <div class="form-group">
-            <label>Tipe Akun</label>
-            <select name="role" class="form-control">
-                <option value="member" {{ 'selected' if default_role == 'member' else '' }}>Anggota Reguler</option>
-                <option value="demo" {{ 'selected' if default_role == 'demo' else '' }}>Akun Uji Coba (Demo)</option>
-            </select>
-        </div>
+        <input type="hidden" name="role" value="member">
         <button type="submit" class="btn-gold" style="width: 100%; justify-content: center;">Daftar Sekarang</button>
     </form>
 

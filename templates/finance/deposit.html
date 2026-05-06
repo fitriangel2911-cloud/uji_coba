@@ -7,39 +7,87 @@
     <!-- Informasi Tagihan -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
         <div class="glass-card" style="padding: 1.5rem; border-left: 5px solid var(--accent-gold);">
-            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Simpanan Pokok</div>
-            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp 2.000.000</div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Wajib bagi anggota baru (Sekali bayar).</p>
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Simpanan Pokok + Adm + Infak</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp 2.015.000</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Wajib bagi anggota baru (Sekali bayar + Adm Rp 5.000 + Infak Rp 10.000).</p>
         </div>
         <div class="glass-card" style="padding: 1.5rem; border-left: 5px solid #10b981;">
-            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Simpanan Wajib</div>
-            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp 100.000</div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Iuran bulanan anggota aktif.</p>
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">Simpanan Wajib + Adm + Infak</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">Rp 115.000</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Iuran bulanan anggota aktif (Simpanan Rp 100.000 + Adm Rp 5.000 + Infak Rp 10.000).</p>
         </div>
     </div>
 
-    <div class="glass-card" style="padding: 2.5rem;">
+    <div class="glass-card" style="padding: 2.5rem;" x-data="{
+        paymentType: 'gabungan',
+        amount: 2115000,
+        infakSelect: '10000',
+        uniqueCode: {{ unique_code }},
+        updateAmount() {
+            if (this.paymentType === 'gabungan') {
+                this.amount = 2115000;
+            } else if (this.paymentType === 'pokok') {
+                this.amount = 2015000;
+            } else if (this.paymentType === 'wajib') {
+                this.amount = 115000;
+            } else if (this.paymentType === 'infak') {
+                if (this.infakSelect !== 'custom') {
+                    this.amount = parseInt(this.infakSelect);
+                } else {
+                    this.amount = '';
+                }
+            } else {
+                this.amount = '';
+            }
+        },
+        getTotalTransfer() {
+            if (!this.amount || isNaN(this.amount)) return 'Rp 0';
+            // Tambahkan kode unik langsung ke nominal transfer
+            let total = parseInt(this.amount) + this.uniqueCode;
+            return 'Rp ' + total.toLocaleString('id-ID');
+        }
+    }" x-init="updateAmount()">
         <h3 style="margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">Kirim Bukti Setoran</h3>
         
         <div id="payment-status">
             <form hx-post="/api/finance/deposit" hx-target="#payment-status" hx-encoding="multipart/form-data">
                 <div class="form-group">
                     <label>Jenis Setoran</label>
-                    <select name="payment_type" class="form-control" required>
-                        <option value="pokok">Simpanan Pokok (Rp 2.000.000)</option>
-                        <option value="wajib">Simpanan Wajib (Rp 100.000)</option>
+                    <select name="payment_type" class="form-control" required x-model="paymentType" @change="updateAmount()">
+                        <option value="gabungan">Gabungan Pokok + Wajib + Adm + Infak (Setoran Pertama - Rp 2.115.000)</option>
+                        <option value="pokok">Simpanan Pokok + Adm + Infak (Satu per satu - Rp 2.015.000)</option>
+                        <option value="wajib">Simpanan Wajib + Adm + Infak (Satu per satu - Rp 115.000)</option>
+                        <option value="infak">Infak & Sedekah (Kelipatan Rp 5.000)</option>
                         <option value="sukarela">Simpanan Sukarela (Bebas)</option>
+                    </select>
+                </div>
+
+                <!-- Pilihan Nominal Infak (Hanya muncul jika jenis setoran adalah Infak) -->
+                <div class="form-group animate-up" x-show="paymentType === 'infak'" style="display: none;">
+                    <label>Pilih Nominal Infak</label>
+                    <select class="form-control" x-model="infakSelect" @change="updateAmount()">
+                        {% for val in range(10000, 105000, 5000) %}
+                            <option value="{{ val }}">Rp {{ "{:,.0f}".format(val) }}</option>
+                        {% endfor %}
+                        <option value="custom">Tulis Sendiri / Kustom</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label>Nominal Setoran (Rp)</label>
-                    <input type="number" name="amount" class="form-control" required placeholder="Contoh: 2000000">
+                    <input type="number" name="amount" class="form-control" required placeholder="Contoh: 2000000" x-model="amount" :readonly="paymentType === 'pokok' || paymentType === 'wajib' || paymentType === 'gabungan' || (paymentType === 'infak' && infakSelect !== 'custom')">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" x-show="paymentType === 'wajib'" style="display: none;">
                     <label>Bulan Pembayaran (Untuk Simpanan Wajib)</label>
                     <input type="month" name="payment_month" class="form-control" value="{{ now_month }}">
+                </div>
+
+                <!-- Dynamic Live Total Transfer with Unique Code -->
+                <div style="background: rgba(251, 191, 36, 0.08); border: 2px solid var(--accent-gold); padding: 1.5rem; border-radius: 12px; margin: 2rem 0; text-align: center;">
+                    <span style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Nominal yang Harus Ditransfer (Ditambah Kode Unik):</span>
+                    <div style="font-size: 2.2rem; font-weight: 900; color: #fff; margin-top: 0.5rem;" x-text="getTotalTransfer()"></div>
+                    <span style="color: var(--accent-gold); font-size: 0.8rem; font-weight: 700;">⚠️ Pastikan nominal transfer persis hingga 3 angka terakhir!</span>
                 </div>
 
                 <div class="form-group" style="margin-top: 2rem;">
@@ -62,11 +110,7 @@
                 <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 12px; margin: 2rem 0; border: 1px solid var(--glass-border);">
                     <h4 style="color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 0.9rem;">Instruksi Transfer:</h4>
                     <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
-                        1. Pastikan Anda menambahkan <strong>Kode Unik Anggota ({{ "{:03d}".format(unique_code) }})</strong> pada nominal transfer untuk mempercepat verifikasi otomatis.<br>
-                        <em>Contoh: Jika nominal <strong>Rp 100.000</strong>, maka total transfer adalah <strong style="color: #10b981;">Rp 100.{{ "{:03d}".format(unique_code) }}</strong></em>
-                    </p>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-                        2. Transfer ke Rekening BSI: <strong>9900 1234 5678</strong><br>
+                        1. Transfer ke Rekening BSI: <strong>9900 1234 5678</strong><br>
                         A.n <strong>Koperasi IQ-RA Digital</strong>
                     </p>
                 </div>

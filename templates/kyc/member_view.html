@@ -10,14 +10,14 @@
         <!-- Informasi Simpanan & Tutorial -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
             <div style="background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); padding: 1.5rem; border-radius: 16px;">
-                <div style="color: var(--gold-solid); font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem;">💳 Simpanan Pokok</div>
-                <div style="font-size: 1.5rem; font-weight: 900;">Rp 2.000.000</div>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Kewajiban awal sekali seumur hidup untuk penyertaan modal syariah.</p>
+                <div style="color: var(--gold-solid); font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem;">💳 Simpanan Pokok + Adm + Infak</div>
+                <div style="font-size: 1.5rem; font-weight: 900;">Rp 2.015.000</div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Kewajiban awal sekali seumur hidup (Penyertaan modal Rp 2.000.000 + Adm Rp 5.000 + Infak Rp 10.000).</p>
             </div>
             <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1.5rem; border-radius: 16px;">
-                <div style="color: #10b981; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem;">📅 Simpanan Wajib</div>
-                <div style="font-size: 1.5rem; font-weight: 900;">Rp 100.000 <span style="font-size: 0.8rem; font-weight: 400;">/ bln</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Iuran bulanan anggota untuk memperkuat likuiditas koperasi.</p>
+                <div style="color: #10b981; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem;">📅 Simpanan Wajib + Adm + Infak</div>
+                <div style="font-size: 1.5rem; font-weight: 900;">Rp 115.000 <span style="font-size: 0.8rem; font-weight: 400;">/ bln</span></div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Iuran bulanan anggota aktif (Simpanan Rp 100.000 + Adm Rp 5.000 + Infak Rp 10.000).</p>
             </div>
         </div>
 
@@ -53,7 +53,7 @@
                     </p>
                 </div>
             {% else %}
-                <form hx-post="/api/kyc/submit" hx-target="#kyc-status">
+                <form hx-post="/api/kyc/submit" hx-target="#kyc-status" hx-encoding="multipart/form-data">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div class="form-group">
                             <label>Nama Lengkap (sesuai KTP)</label>
@@ -107,9 +107,29 @@
                             <option value="Musyarakah">Musyarakah (Kerja Sama Modal)</option>
                         </select>
                     </div>
+
+                    <!-- Modern Premium Upload Container for KTP / Paspor / Identitas -->
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label>Upload KTP / Paspor / Identitas Lainnya</label>
+                        <div style="border: 2px dashed var(--glass-border); padding: 1.5rem; border-radius: 12px; text-align: center; position: relative; transition: all 0.2s; background: rgba(255,255,255,0.01);" onmouseover="this.style.borderColor='var(--accent-gold)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+                            <input type="file" name="ktp_file" id="ktp_file" required accept="image/*,application/pdf" style="opacity: 0; position: absolute; inset: 0; cursor: pointer; width: 100%; height: 100%; z-index: 10;" onchange="document.getElementById('ktp-display').innerHTML = this.files[0] ? '<div style=\'color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); padding: 0.5rem; border-radius: 8px; display: inline-block;\'>✅ Dokumen Identitas Siap:<br><strong>' + this.files[0].name + '</strong></div>' : '<span style=\'color: var(--text-muted);\'>Belum ada file dipilih</span>'">
+                            <div style="color: var(--text-muted); position: relative; z-index: 1;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 0.5rem; color: var(--accent-gold);"><rect x="3" y="4" width="18" height="16" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="4"/><line x1="8" y1="2" x2="8" y2="4"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <p style="font-weight: 600; font-size: 0.9rem;">Pilih Foto KTP / Paspor / SIM</p>
+                                <p style="font-size: 0.7rem; opacity: 0.7;">Format JPG, PNG, atau PDF (Maks 2MB)</p>
+                                <div id="ktp-display" style="margin-top: 1rem; font-size: 0.8rem;">
+                                    <span style="color: var(--text-muted);">Belum ada file dipilih</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group" style="margin: 2rem 0;">
-                        <div style="background: rgba(251, 191, 36, 0.05); padding: 1rem; border-radius: 10px; border: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--text-muted);">
-                            <strong>Catatan:</strong> Setelah pengajuan Anda disetujui, Anda akan diminta untuk melakukan setoran Simpanan Pokok (Rp 2.000.000) dan Simpanan Wajib awal melalui menu <strong>'Setoran & Simpanan'</strong>.
+                        <div style="background: rgba(251, 191, 36, 0.05); padding: 1.25rem; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.2); font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                            <strong>💡 Catatan Kebijakan Setoran Pertama:</strong><br>
+                            • <strong>Paket Gabungan (Lebih Hemat)</strong>: Jika Anda membayar Simpanan Pokok & Wajib sekaligus di pembayaran pertama, biaya Administrasi & Infak digabung menjadi satu, sehingga total transfer hanya <strong>Rp 2.115.000</strong>.<br>
+                            • <strong>Satu per Satu (Terpisah)</strong>: Jika membayar terpisah, Simpanan Pokok + Adm + Infak adalah <strong>Rp 2.015.000</strong> dan Simpanan Wajib bulanan adalah <strong>Rp 115.000</strong>.<br>
+                            <em>Semua pembayaran dapat disetor dengan sangat mudah melalui menu <strong>'Setoran & Simpanan'</strong> setelah akun Anda disetujui.</em>
                         </div>
                     </div>
                     <div class="form-group" style="margin: 2rem 0;">
@@ -118,7 +138,7 @@
                             <span>Saya menyetujui seluruh <a href="#" style="color: var(--accent);">Syarat & Ketentuan</a> Koperasi Syariah.</span>
                         </label>
                     </div>
-                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">Kirim Permohonan Keanggotaan</button>
+                    <button type="submit" class="btn-gold" style="width: 100%; justify-content: center; padding: 1.2rem; font-size: 1.1rem; cursor: pointer;">Kirim Permohonan Keanggotaan</button>
                 </form>
             {% endif %}
         </div>

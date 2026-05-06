@@ -14,7 +14,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('auth.login'))
-        if session.get('role') not in ('admin', 'staff', 'cs', 'bendahara', 'manager'):
+        if session.get('role') not in ('admin', 'staff', 'cs', 'bendahara', 'manager', 'dps'):
             flash("Akses ditolak: Area khusus manajemen.", "error")
             return redirect(url_for('dashboard.index'))
         return f(*args, **kwargs)
