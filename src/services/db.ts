@@ -1,6 +1,8 @@
 // Koperasi Syariah Digital (KSD) - Mock Database & SAK EP Ledger Service
 // File: src/services/db.ts
 
+import { supabase } from './supabaseClient';
+
 export type Role = 'jamaah' | 'takmir' | 'dps' | 'admin';
 
 export interface User {
@@ -130,6 +132,104 @@ class Database {
   private set<T>(key: string, value: T): void {
     if (this.isClient) {
       localStorage.setItem(`ksd_${key}`, JSON.stringify(value));
+    }
+  }
+
+  public async loadSupabaseData(): Promise<boolean> {
+    try {
+      const { data: dbUsers, error: usersErr } = await supabase.from('users').select('*');
+      if (!usersErr && dbUsers && dbUsers.length > 0) {
+        this.set('users', dbUsers.map(u => ({
+          id: u.id,
+          email: u.email,
+          role: u.role as any,
+          name: u.email.split('@')[0].toUpperCase()
+        })));
+      }
+
+      const { data: dbMembers, error: membersErr } = await supabase.from('members').select('*');
+      if (!membersErr && dbMembers) {
+        this.set('members', dbMembers.map(m => ({
+          id: m.id,
+          userId: m.user_id,
+          fullName: m.full_name,
+          nik: m.nik,
+          address: m.address,
+          phone: m.phone,
+          status: m.status as any,
+          createdAt: m.created_at
+        })));
+      }
+
+      const { data: dbAccounts, error: accErr } = await supabase.from('accounts').select('*');
+      if (!accErr && dbAccounts) {
+        this.set('accounts', dbAccounts.map(a => ({
+          id: a.id,
+          memberId: a.member_id,
+          accountType: a.account_type as any,
+          balance: Number(a.balance),
+          createdAt: a.created_at
+        })));
+      }
+
+      const { data: dbTransactions, error: txErr } = await supabase.from('transactions').select('*');
+      if (!txErr && dbTransactions) {
+        this.set('transactions', dbTransactions.map(t => ({
+          id: t.id,
+          accountId: t.account_id,
+          transactionType: t.transaction_type as any,
+          amount: Number(t.amount),
+          referenceNumber: t.reference_number,
+          createdAt: t.created_at
+        })));
+      }
+
+      const { data: dbContracts, error: cErr } = await supabase.from('financing_contracts').select('*');
+      if (!cErr && dbContracts) {
+        this.set('financing', dbContracts.map(c => ({
+          id: c.id,
+          memberId: c.member_id,
+          contractType: c.contract_type as any,
+          principalAmount: Number(c.principal_amount),
+          marginAmount: Number(c.margin_amount),
+          installmentPeriod: c.installment_period,
+          remainingBalance: Number(c.remaining_balance),
+          installmentsPaid: 0,
+          status: c.status as any,
+          itemName: c.item_details || '',
+          createdAt: c.created_at
+        })));
+      }
+
+      const { data: dbJournals, error: jErr } = await supabase.from('journal_entries').select('*');
+      if (!jErr && dbJournals) {
+        this.set('journals', dbJournals.map(j => ({
+          id: j.id,
+          transactionId: j.transaction_id || '',
+          codeCoa: j.code_coa,
+          debit: Number(j.debit),
+          credit: Number(j.credit),
+          description: j.description,
+          createdAt: j.created_at
+        })));
+      }
+
+      const { data: dbLogs, error: lErr } = await supabase.from('audit_logs').select('*');
+      if (!lErr && dbLogs) {
+        this.set('audit_logs', dbLogs.map(l => ({
+          id: l.id,
+          userId: l.user_id,
+          action: l.action,
+          targetTable: l.module,
+          ipAddress: 'Supabase Cloud',
+          createdAt: l.created_at
+        })));
+      }
+
+      return true;
+    } catch (e) {
+      console.warn("Supabase fetch failed, fallback to local storage:", e);
+      return false;
     }
   }
 

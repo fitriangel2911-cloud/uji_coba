@@ -5,6 +5,9 @@ import { db, User, Member, Account, Transaction, FinancingContract, JournalEntry
 import { queryShariaAssistant } from '../services/ai';
 
 export default function Home() {
+  // --- Hydration Protection State ---
+  const [isMounted, setIsMounted] = useState(false);
+
   // --- Active Session Role Switching ---
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -64,12 +67,22 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // Initialize users
-    const allUsers = db.getUsers();
-    setUsers(allUsers);
-    // Set Ahmad (usr-1) as default active session
-    setCurrentUser(allUsers[0]);
-    syncState();
+    const initData = async () => {
+      // Pull latest tables from Supabase cloud database, fallback to localStorage if offline
+      await db.loadSupabaseData();
+
+      // Initialize users
+      const allUsers = db.getUsers();
+      setUsers(allUsers);
+      
+      // Use Ahmad (usr-1) or first seeded user as default active session
+      const defaultUser = allUsers.find(u => u.email === 'ahmad@ksd.id') || allUsers[0];
+      setCurrentUser(defaultUser || null);
+      
+      syncState();
+      setIsMounted(true);
+    };
+    initData();
   }, []);
 
   // Recalculate financing calculator on inputs
@@ -267,6 +280,18 @@ export default function Home() {
   // -------------------------------------------------------------
   // Financial Calculators & Aggregations
   // -------------------------------------------------------------
+
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-6">
+        <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-emerald-400 animate-pulse tracking-wide">IQ-RA Sharia Digital Cooperative</h2>
+          <p className="text-xs text-slate-400 mt-2">Sinkronisasi data aman dengan Supabase Cloud...</p>
+        </div>
+      </div>
+    );
+  }
 
   const neraca = db.generateNeraca();
   const phu = db.generatePHU();
