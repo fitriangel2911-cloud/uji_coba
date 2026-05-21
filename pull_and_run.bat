@@ -1,6 +1,0 @@
-@echo off
-echo Running Git Pull...
-git pull
-echo.
-echo Running System...
-venv\Scripts\python.exe app.py
